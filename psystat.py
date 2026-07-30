@@ -1,6 +1,12 @@
 import sys
 import os
+import unittest  # Add this to force the bundler to include it
 
+# Built-in resource loader — resolves paths to bundled docs and datasets
+# whether running from source or as a frozen PyInstaller / Nuitka bundle.
+try:
+    from resources import resource_path
+    
 # Built-in resource loader — resolves paths to bundled docs and datasets
 # whether running from source or as a frozen PyInstaller / Nuitka bundle.
 try:
