@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use PsyStat in your research, please cite it using the metadata below."
+type: software
+title: "PsyStat: A Comprehensive Statistical Analysis Tool for Psychology and Social Science Research"
+version: 1.1.0
+date-released: 2025-07-30
+authors:
+  - family-names: Setiawan
+    given-names: Tery
+    affiliation: "Universitas Kristen Maranatha & Radboud University"
+abstract: >
+  PsyStat is a modern, graphical desktop application designed for psychologists,
+  social scientists, and researchers who require a powerful yet intuitive
+  statistical analysis tool. It covers 17 analysis modules including data
+  management, descriptives, t-tests, ANOVA (Type III SS with sphericity
+  corrections), regression (OLS, logistic, multinomial), mediation analysis,
+  EFA, CFA, SEM, CATPCA, latent profile analysis, psychometric network
+  analysis, forecasting, and power analysis. All outputs are APA-formatted.
+  PsyStat is distributed as a self-contained application for Windows and macOS.
+keywords:
+  - statistics
+  - psychology
+  - social science
+  - SPSS alternative
+  - factor analysis
+  - structural equation modeling
+  - ANOVA
+  - regression
+  - psychometrics
+  - open source
+license: MIT
+repository-code: "https://github.com/terysetn02-source/psystat"
+url: "https://github.com/terysetn02-source/psystat"
