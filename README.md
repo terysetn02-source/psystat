@@ -112,6 +112,11 @@ Bug reports, feature suggestions, and pull requests are welcome. Please read [CO
 
 ---
 
+## Icon Credit
+<a href="https://www.flaticon.com/free-icons/statistics" title="statistics icons"> Statistics icons created by Magnific - Flaticon</a>
+
+---
+
 ## 📄 License
 
 PsyStat is released for academic and research purposes under the MIT License. See [LICENSE](LICENSE) for full terms.
