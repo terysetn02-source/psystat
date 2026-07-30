@@ -1,0 +1,139 @@
+name: Build & Release PsyStat
+
+# Trigger on a version tag push (e.g. git tag v1.1.0 && git push --tags)
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  # ── Windows build ────────────────────────────────────────────────────────────
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyinstaller
+          pip install PyQt5 PyQtWebEngine
+          pip install numpy pandas scipy statsmodels
+          pip install factor_analyzer semopy pingouin prince
+          pip install scikit-learn networkx matplotlib
+          pip install openpyxl xlrd pyreadstat mistune
+
+      - name: Build with PyInstaller
+        run: pyinstaller psystat.spec
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Compile installer with Inno Setup
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\psystat_setup.iss
+
+      - name: Upload Windows installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: installer/Output/PsyStat-Setup-*.exe
+
+  # ── macOS build ──────────────────────────────────────────────────────────────
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyinstaller
+          pip install PyQt5 PyQtWebEngine
+          pip install numpy pandas scipy statsmodels
+          pip install factor_analyzer semopy pingouin prince
+          pip install scikit-learn networkx matplotlib
+          pip install openpyxl xlrd pyreadstat mistune
+
+      - name: Build with PyInstaller
+        run: pyinstaller psystat.spec
+
+      - name: Create DMG from .app
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "PsyStat" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "PsyStat.app" 175 190 \
+            --hide-extension "PsyStat.app" \
+            --app-drop-link 425 190 \
+            "PsyStat.dmg" \
+            "dist/PsyStat.app"
+
+      - name: Upload macOS DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: PsyStat.dmg
+
+  # ── GitHub Release ───────────────────────────────────────────────────────────
+  release:
+    name: Create GitHub Release
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Windows installer
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: release-files/
+
+      - name: Download macOS DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-dmg
+          path: release-files/
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "PsyStat ${{ github.ref_name }}"
+          body: |
+            ## PsyStat ${{ github.ref_name }}
+
+            ### Downloads
+            | Platform | File |
+            |---|---|
+            | **Windows 10/11** | `PsyStat-Setup-*.exe` |
+            | **macOS (Intel & Apple Silicon)** | `PsyStat.dmg` |
+
+            ### Installation
+            - **Windows:** Run the installer. If SmartScreen warns you, click **More info → Run anyway**.
+            - **macOS:** Open the DMG, drag PsyStat to Applications. On first launch, go to **System Settings → Privacy & Security → Open Anyway**.
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for what's new.
+          files: release-files/*
+          draft: false
+          prerelease: false
