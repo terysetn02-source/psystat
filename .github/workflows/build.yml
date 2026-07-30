@@ -1,10 +1,10 @@
 name: Build & Release PsyStat
 
-# Trigger on a version tag push (e.g. git tag v1.1.0 && git push --tags)
 on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
 
 jobs:
   # ── Windows build ────────────────────────────────────────────────────────────
@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          node-version: '24'
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -25,7 +27,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pyinstaller
-          pip install PyQt5 PyQtWebEngine
+          pip install PyQt6 PyQt6-WebEngine
           pip install numpy pandas scipy statsmodels
           pip install factor_analyzer semopy pingouin prince
           pip install scikit-learn networkx matplotlib
@@ -65,7 +67,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pyinstaller
-          pip install PyQt5 PyQtWebEngine
+          pip install PyQt6 PyQt6-WebEngine
           pip install numpy pandas scipy statsmodels
           pip install factor_analyzer semopy pingouin prince
           pip install scikit-learn networkx matplotlib
@@ -75,6 +77,8 @@ jobs:
         run: pyinstaller psystat.spec
 
       - name: Create DMG from .app
+        env:
+          HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
         run: |
           brew install create-dmg
           create-dmg \
