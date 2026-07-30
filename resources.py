@@ -261,7 +261,7 @@ def _inline(text: str) -> str:
 def _show_error(msg: str) -> None:
     """Display an error if the manual cannot be opened."""
     try:
-        from PyQt5.QtWidgets import QMessageBox
+        from PyQt6.QtWidgets import QMessageBox
         QMessageBox.critical(None, "PsyStat — Resource Error", msg)
     except Exception:
         print(f"[PsyStat resource error] {msg}")
