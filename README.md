@@ -59,8 +59,8 @@ To help you get started, this repository includes two sample datasets:
 
 | Platform | Download |
 |----------|----------|
-| Windows (64-bit) | [PsyStat-Setup-Windows.exe](https://github.com/your-username/psystat/releases/latest) |
-| macOS (Universal) | [PsyStat-macOS.dmg](https://github.com/your-username/psystat/releases/latest) |
+| Windows (64-bit) | [PsyStat-Setup-Windows.exe](https://github.com/terysetn02-source/psystat/releases/latest) |
+| macOS (Universal) | [PsyStat-macOS.dmg](https://github.com/terysetn02-source/psystat/releases/latest) |
 
 No Python required. Just install and run.
 
