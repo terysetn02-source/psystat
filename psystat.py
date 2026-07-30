@@ -1,6 +1,5 @@
 import sys
 import os
-import unittest  # The fix for the bundler
 
 # Built-in resource loader — resolves paths to bundled docs and datasets
 # whether running from source or as a frozen PyInstaller / Nuitka bundle.
