@@ -1,6 +1,6 @@
 import sys
 import os
-import unittest  # Add this to force the bundler to include it
+import unittest  # The fix for the bundler
 
 # Built-in resource loader — resolves paths to bundled docs and datasets
 # whether running from source or as a frozen PyInstaller / Nuitka bundle.
@@ -11,6 +11,7 @@ except ImportError:
         """Fallback: resolve relative to this file's directory."""
         base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(base, relative_path.replace("/", os.sep))
+
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
