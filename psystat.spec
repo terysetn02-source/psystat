@@ -47,9 +47,11 @@ hiddenimports = [
     # Network
     "networkx",
     # Plotting
-    "matplotlib", "matplotlib.backends.backend_qt6agg",
-	"PyQt6", "PyQt6.QtWidgets", "PyQt6.QtCore", "PyQt6.QtGui",
-	"PyQt6.QtWebEngineWidgets",
+    "matplotlib", "matplotlib.backends.backend_qt5agg",
+    "matplotlib.figure",
+    # UI
+    "PyQt5", "PyQt5.QtWidgets", "PyQt5.QtCore", "PyQt5.QtGui",
+    "PyQt5.QtWebEngineWidgets",
     # Markdown renderer (optional; resources.py has a fallback)
     "mistune",
     # File I/O
@@ -66,7 +68,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=["tkinter", "test", "unittest"],
+    excludes=["tkinter", "test"],
     noarchive=False,
 )
 
