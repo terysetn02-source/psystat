@@ -195,7 +195,8 @@ def _md_to_html(md: str) -> str:
 
             # Ordered list
             if re.match(r"^\d+\.\s", line):
-                out.append(f"<li>{_inline(re.sub(r'^\d+\.\s', '', line))}</li>")
+                cleaned_line = re.sub(r'^\d+\.\s', '', line)
+                out.append(f"<li>{_inline(cleaned_line)}</li>")
                 continue
 
             # Blank line
