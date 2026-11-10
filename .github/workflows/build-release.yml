@@ -156,7 +156,7 @@ jobs:
             echo "See the [User Manual](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/USER_MANUAL.md#2-installation)."
           } >> release-notes.md
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           name: PsyStat ${{ needs.version.outputs.version }}
           body_path: release-notes.md
