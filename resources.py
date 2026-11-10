@@ -1,327 +1,170 @@
 """
-resources.py — PsyStat built-in resource loader
-------------------------------------------------
-Resolves paths to bundled files (User Manual, example datasets) whether the
-app is running:
-  A. From source          : /path/to/repo/psystat.py
-  B. As a frozen bundle   : PyInstaller / Nuitka .exe or .app
+resources.py - locate bundled files and open documentation.
 
-Usage inside psystat.py
------------------------
-    from resources import resource_path, open_user_manual, load_example_dataset
+Works when PsyStat is run from source AND when it is frozen with PyInstaller on Windows or macOS
+(onedir / .app bundles).  Public API used by psystat.py:
 
-    # Get an absolute path to any bundled file
-    manual_path   = resource_path("docs/USER_MANUAL.md")
-    csv_path      = resource_path("examples/survey_example.csv")
-
-    # Open the User Manual in the system's default browser/Markdown viewer
-    open_user_manual()
-
-    # Load an example dataset directly into a pandas DataFrame
-    df = load_example_dataset("experiment_example.csv")
-    df = load_example_dataset("survey_example.csv")
+    resource_path(relative_path)        -> absolute path of a bundled file (raises FileNotFoundError)
+    load_example_dataset(filename)      -> pandas.DataFrame
+    get_example_dataset_info()          -> {filename: {"label": ..., "description": ...}}
+    open_user_manual()                  -> opens docs/USER_MANUAL.html (or renders the .md) in the browser
+    open_markdown_document(rel, title)  -> renders a bundled .md file to HTML and opens it in the browser
+    render_markdown(md_text, title)     -> full HTML page (string)
 """
-
+import html as _html
 import os
+import pathlib
 import sys
-import webbrowser
 import tempfile
-import shutil
+import webbrowser
 
-import pandas as pd
-
-
-# ── Path resolution ───────────────────────────────────────────────────────────
-
-def _base_dir() -> str:
-    """
-    Return the base directory that contains docs/, examples/, etc.
-
-    When frozen by PyInstaller:  sys._MEIPASS  (the temp extraction folder)
-    When frozen by Nuitka:       directory of the executable
-    When running from source:    directory of this file (= repo root)
-    """
-    if getattr(sys, 'frozen', False):
-        # PyInstaller sets sys._MEIPASS; Nuitka does not, but sets sys.frozen
-        return getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
-    return os.path.dirname(os.path.abspath(__file__))
-
-
-def resource_path(relative_path: str) -> str:
-    """
-    Return the absolute path to a bundled resource file.
-
-    Parameters
-    ----------
-    relative_path : str
-        Path relative to the repo/bundle root, using forward slashes.
-        Examples: "docs/USER_MANUAL.md", "examples/survey_example.csv"
-
-    Returns
-    -------
-    str
-        Absolute path to the file.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the resolved path does not exist.
-    """
-    path = os.path.join(_base_dir(), relative_path.replace("/", os.sep))
-    if not os.path.exists(path):
-        raise FileNotFoundError(
-            f"Bundled resource not found: {path}\n"
-            f"Base directory resolved to: {_base_dir()}\n"
-            "If running from source, ensure docs/ and examples/ are present "
-            "next to psystat.py."
-        )
-    return path
+# ─────────────────────────────────────────────────────────────────────────────
+# Locating bundled files
+# ─────────────────────────────────────────────────────────────────────────────
+def _candidate_bases():
+    """Folders that may contain the bundled data files, most specific first."""
+    bases = []
+    meipass = getattr(sys, "_MEIPASS", None)               # PyInstaller (onefile temp dir / onedir _internal)
+    if meipass:
+        bases.append(meipass)
+    exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+    if getattr(sys, "frozen", False):
+        bases += [
+            exe_dir,
+            os.path.join(exe_dir, "_internal"),                         # PyInstaller >= 6 onedir (Windows)
+            os.path.abspath(os.path.join(exe_dir, "..", "Resources")),  # macOS .app bundle
+            os.path.abspath(os.path.join(exe_dir, "..", "Frameworks")),
+        ]
+    bases.append(os.path.dirname(os.path.abspath(__file__)))           # running from source
+    bases.append(os.path.abspath("."))                                 # last resort: current folder
+    seen, out = set(), []
+    for b in bases:
+        if b and b not in seen:
+            seen.add(b)
+            out.append(b)
+    return out
 
 
-# ── User Manual ───────────────────────────────────────────────────────────────
-
-def open_user_manual() -> None:
-    """
-    Open the built-in User Manual in the system's default browser.
-
-    The Markdown file is converted to a minimal HTML page and written to a
-    temporary file, then opened via webbrowser.open().  The HTML renders
-    correctly in any modern browser without any extra tooling.
-    """
-    try:
-        md_path = resource_path("docs/USER_MANUAL.md")
-    except FileNotFoundError as exc:
-        _show_error(str(exc))
-        return
-
-    with open(md_path, "r", encoding="utf-8") as f:
-        md_text = f.read()
-
-    html = _md_to_html(md_text)
-
-    # Write to a temp file that persists until the OS cleans it up
-    tmp = tempfile.NamedTemporaryFile(
-        mode="w", suffix=".html", delete=False, encoding="utf-8"
+def resource_path(relative_path):
+    """Absolute path of a bundled file or folder. Raises FileNotFoundError if it cannot be found."""
+    rel = str(relative_path).replace("\\", "/")
+    for base in _candidate_bases():
+        p = os.path.join(base, *rel.split("/"))
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError(
+        f"Bundled file not found: '{relative_path}'.\nSearched in:\n  " + "\n  ".join(_candidate_bases())
     )
-    tmp.write(html)
-    tmp.close()
-    webbrowser.open(f"file://{tmp.name}")
 
 
-def _md_to_html(md: str) -> str:
-    """
-    Convert Markdown to a self-contained HTML page.
-
-    Handles: headings, bold/italic, inline code, fenced code blocks,
-    horizontal rules, tables (GitHub-Flavored), blockquotes, and lists.
-    External CSS-free; uses inline styles compatible with all browsers.
-    """
-    # Try mistune first (fast, no external deps other than itself)
-    try:
-        import mistune
-        body = mistune.html(md)
-    except ImportError:
-        # Minimal regex-based fallback — covers the constructs in USER_MANUAL.md
-        import re
-
-        lines = md.split("\n")
-        out   = []
-        in_code  = False
-        in_table = False
-        code_buf = []
-
-        for line in lines:
-            # Fenced code blocks
-            if line.startswith("```"):
-                if in_code:
-                    out.append("<pre><code>" + "\n".join(code_buf) + "</code></pre>")
-                    code_buf = []
-                    in_code  = False
-                else:
-                    in_code = True
-                continue
-            if in_code:
-                code_buf.append(_escape(line))
-                continue
-
-            # Tables
-            if "|" in line and line.strip().startswith("|"):
-                cells = [c.strip() for c in line.strip().strip("|").split("|")]
-                if all(set(c.replace("-", "").replace(":", "")) == set() for c in cells):
-                    continue   # separator row
-                if not in_table:
-                    out.append("<table style='border-collapse:collapse;width:100%;margin:12px 0'>")
-                    tag = "th"
-                    in_table = True
-                else:
-                    tag = "td"
-                row = "".join(
-                    f"<{tag} style='border:1px solid #ccc;padding:6px 10px;text-align:left'>"
-                    f"{_inline(c)}</{tag}>"
-                    for c in cells
-                )
-                out.append(f"<tr>{row}</tr>")
-                continue
-            elif in_table:
-                out.append("</table>")
-                in_table = False
-
-            # Headings
-            m = re.match(r"^(#{1,6})\s+(.*)", line)
-            if m:
-                lvl  = len(m.group(1))
-                text = _inline(m.group(2))
-                size = {1: "2em", 2: "1.5em", 3: "1.2em"}.get(lvl, "1em")
-                out.append(f"<h{lvl} style='font-size:{size};margin-top:1.2em'>{text}</h{lvl}>")
-                continue
-
-            # Horizontal rule
-            if re.match(r"^---+$", line.strip()):
-                out.append("<hr style='border:none;border-top:1px solid #ddd;margin:16px 0'>")
-                continue
-
-            # Blockquote
-            if line.startswith("> "):
-                out.append(
-                    f"<blockquote style='border-left:4px solid #ccc;margin:8px 0;"
-                    f"padding:4px 12px;color:#555'>{_inline(line[2:])}</blockquote>"
-                )
-                continue
-
-            # Unordered list
-            if re.match(r"^[-*]\s", line):
-                out.append(f"<li>{_inline(line[2:])}</li>")
-                continue
-
-            # Ordered list
-            if re.match(r"^\d+\.\s", line):
-                cleaned_line = re.sub(r'^\d+\.\s', '', line)
-                out.append(f"<li>{_inline(cleaned_line)}</li>")
-                continue
-
-            # Blank line
-            if line.strip() == "":
-                out.append("<br>")
-                continue
-
-            out.append(f"<p style='margin:6px 0'>{_inline(line)}</p>")
-
-        if in_table:
-            out.append("</table>")
-        if in_code:
-            out.append("<pre><code>" + "\n".join(code_buf) + "</code></pre>")
-
-        body = "\n".join(out)
-
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PsyStat User Manual</title>
-<style>
-  body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          max-width: 900px; margin: 40px auto; padding: 0 24px;
-          color: #1a1a1a; line-height: 1.6; }}
-  code {{ background: #f4f4f4; padding: 2px 5px; border-radius: 3px;
-          font-family: 'Courier New', monospace; font-size: .9em; }}
-  pre  {{ background: #f4f4f4; padding: 14px; border-radius: 6px; overflow-x: auto; }}
-  pre code {{ background: none; padding: 0; }}
-  table {{ border-collapse: collapse; width: 100%; margin: 12px 0; }}
-  th, td {{ border: 1px solid #ccc; padding: 7px 12px; text-align: left; }}
-  th {{ background: #f0f0f0; }}
-  blockquote {{ border-left: 4px solid #bbb; margin: 10px 0;
-                padding: 6px 14px; color: #555; background: #fafafa; }}
-  h1 {{ border-bottom: 2px solid #333; padding-bottom: 8px; }}
-  h2 {{ border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-top: 2em; }}
-  a  {{ color: #2563EB; }}
-</style>
-</head>
-<body>
-{body}
-</body>
-</html>"""
-
-
-def _escape(text: str) -> str:
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-
-def _inline(text: str) -> str:
-    """Apply inline Markdown formatting (bold, italic, code, links)."""
-    import re
-    text = _escape(text)
-    text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-    text = re.sub(r"\*(.+?)\*",     r"<em>\1</em>",         text)
-    text = re.sub(r"`(.+?)`",       r"<code>\1</code>",      text)
-    text = re.sub(r"\[(.+?)\]\((.+?)\)", r'<a href="\2">\1</a>', text)
-    return text
-
-
-def _show_error(msg: str) -> None:
-    """Display an error if the manual cannot be opened."""
-    try:
-        from PyQt6.QtWidgets import QMessageBox
-        QMessageBox.critical(None, "PsyStat — Resource Error", msg)
-    except Exception:
-        print(f"[PsyStat resource error] {msg}")
-
-
-# ── Example datasets ──────────────────────────────────────────────────────────
-
-#: Available built-in example datasets
-EXAMPLE_DATASETS = {
+# ─────────────────────────────────────────────────────────────────────────────
+# Example datasets
+# ─────────────────────────────────────────────────────────────────────────────
+_EXAMPLE_DATASETS = {
     "experiment_example.csv": {
-        "label": "Intergroup Contact Experiment (N=300)",
-        "description": (
-            "Experimental study with pre/post measures of prejudice, contact quality, "
-            "group identification, intergroup anxiety, cooperation, and life satisfaction. "
-            "Suitable for: Paired T-Tests, Repeated-Measures ANOVA, Regression, "
-            "Mediation Analysis, SEM."
-        ),
-        "path": "examples/experiment_example.csv",
+        "label": "Experiment Example (N=300) — Contact Study",
+        "description": ("Simulated two-group (Contact vs Control) experiment with pre-test, post-test and follow-up "
+                        "measures of prejudice, contact quality, group identification, intergroup anxiety, cooperation "
+                        "and life satisfaction. Includes mediation, moderation and mixed-design effects, and some missing data."),
     },
     "survey_example.csv": {
-        "label": "Cross-Sectional Survey Study (N=250)",
-        "description": (
-            "Survey with 15 Likert-scale items across four constructs: Social Identity (5 items), "
-            "Intergroup Contact (4 items), Prejudice (3 items), and Wellbeing (3 items). "
-            "Suitable for: Item Analysis, EFA, CFA, Correlation, CATPCA, Network Analysis, SEM."
-        ),
-        "path": "examples/survey_example.csv",
+        "label": "Survey Example (N=250) — Psychometric Survey",
+        "description": ("Simulated cross-sectional survey: 15 five-point Likert items measuring four constructs "
+                        "(Social Identity, Intergroup Contact, Prejudice, Wellbeing) plus age, gender and education. "
+                        "Item si5 is reverse-worded. About 1% of item responses are missing."),
+    },
+    "cvi_expert_ratings_example.csv": {
+        "label": "CVI Example — Expert Ratings (12 items x 6 experts)",
+        "description": ("Simulated relevance ratings (1-4) of 12 items by 6 experts, for the Content Validity Index "
+                        "(I-CVI, S-CVI/Ave, S-CVI/UA) calculator in Item Analysis & CVI."),
+    },
+    "timeseries_example.csv": {
+        "label": "Time Series Example — Monthly Counselling Visits (60 months)",
+        "description": ("Simulated monthly counselling-centre visits with an upward trend and yearly seasonality, "
+                        "for Forecasting (Time Series)."),
     },
 }
 
 
-def load_example_dataset(filename: str) -> pd.DataFrame:
-    """
-    Load a built-in example dataset and return it as a pandas DataFrame.
-
-    Parameters
-    ----------
-    filename : str
-        One of: "experiment_example.csv", "survey_example.csv"
-
-    Returns
-    -------
-    pd.DataFrame
-
-    Raises
-    ------
-    ValueError
-        If the filename is not a recognised built-in dataset.
-    FileNotFoundError
-        If the file cannot be found inside the bundle.
-    """
-    if filename not in EXAMPLE_DATASETS:
-        raise ValueError(
-            f"Unknown example dataset: {filename!r}. "
-            f"Available: {list(EXAMPLE_DATASETS.keys())}"
-        )
-    path = resource_path(EXAMPLE_DATASETS[filename]["path"])
-    return pd.read_csv(path)
+def get_example_dataset_info():
+    return {k: dict(v) for k, v in _EXAMPLE_DATASETS.items()}
 
 
-def get_example_dataset_info() -> dict:
-    """Return metadata dict for all built-in example datasets."""
-    return EXAMPLE_DATASETS
+def load_example_dataset(filename):
+    import pandas as pd
+    return pd.read_csv(resource_path("examples/" + os.path.basename(filename)))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Markdown -> HTML (used for the README / examples guide, and as a fallback for the manual)
+# ─────────────────────────────────────────────────────────────────────────────
+HTML_CSS = """
+body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color:#1f2933; line-height:1.55;
+       max-width: 940px; margin: 0 auto; padding: 24px 28px 60px 28px; font-size: 15px; }
+h1 { font-size: 30px; color:#14213d; border-bottom: 3px solid #14213d; padding-bottom: 8px; margin-top: 8px; }
+h2 { font-size: 23px; color:#14213d; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 38px; }
+h3 { font-size: 18px; color:#1d3557; margin-top: 26px; }
+h4 { font-size: 15px; color:#1d3557; margin-top: 18px; }
+a { color:#1d4ed8; text-decoration: none; } a:hover { text-decoration: underline; }
+code { background:#eef2f7; padding: 1px 5px; border-radius: 3px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+pre { background:#0f172a; color:#e2e8f0; padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; margin: 12px 0; width: 100%; font-size: 14px; }
+th, td { border: 1px solid #cbd5e1; padding: 6px 9px; text-align: left; vertical-align: top; }
+th { background:#e8eef6; }
+tr:nth-child(even) td { background:#f8fafc; }
+blockquote { border-left: 4px solid #94a3b8; margin: 14px 0; padding: 4px 14px; background:#f1f5f9; color:#334155; }
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 28px 0; }
+img { max-width: 100%; }
+.toc { background:#f8fafc; border:1px solid #e2e8f0; border-radius: 6px; padding: 8px 18px; }
+@media print { body { max-width: none; padding: 0; } h2 { page-break-before: auto; } pre, table, blockquote { page-break-inside: avoid; } }
+"""
+
+
+def _md_to_body(md_text):
+    """Markdown text -> HTML body. Tries mistune, then python-markdown, then a plain <pre> fallback."""
+    try:
+        import mistune
+        try:
+            md = mistune.create_markdown(escape=False, plugins=["table", "strikethrough", "task_lists"])
+        except Exception:
+            md = mistune.create_markdown(escape=False, plugins=["table", "strikethrough"])
+        return md(md_text)
+    except Exception:
+        pass
+    try:
+        import markdown
+        return markdown.markdown(md_text, extensions=["tables", "fenced_code", "sane_lists", "toc"])
+    except Exception:
+        return "<pre>" + _html.escape(md_text) + "</pre>"
+
+
+def render_markdown(md_text, title="PsyStat"):
+    body = _md_to_body(md_text)
+    return (f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>{_html.escape(title)}</title>"
+            f"<style>{HTML_CSS}</style></head><body>{body}</body></html>")
+
+
+def _open_in_browser(path):
+    """Open a local file in the default browser (valid file:// URI on Windows and macOS)."""
+    return webbrowser.open(pathlib.Path(path).resolve().as_uri())
+
+
+def open_markdown_document(relative_path, title=None):
+    """Render a bundled Markdown file to HTML and open it in the default browser."""
+    src = resource_path(relative_path)
+    with open(src, "r", encoding="utf-8") as fh:
+        text = fh.read()
+    page = render_markdown(text, title or os.path.basename(src))
+    tmp = tempfile.NamedTemporaryFile(prefix="psystat_doc_", suffix=".html", delete=False, mode="w", encoding="utf-8")
+    tmp.write(page)
+    tmp.close()
+    return _open_in_browser(tmp.name)
+
+
+def open_user_manual():
+    """Open the user manual in the browser: the pre-rendered HTML if bundled, otherwise render the Markdown."""
+    try:
+        return _open_in_browser(resource_path("docs/USER_MANUAL.html"))
+    except FileNotFoundError:
+        return open_markdown_document("docs/USER_MANUAL.md", "PsyStat User Manual")

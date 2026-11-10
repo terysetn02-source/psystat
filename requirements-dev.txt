@@ -1,0 +1,7 @@
+# Extra tools for development, documentation and packaging
+-r requirements.txt
+pytest>=8.0
+pyinstaller>=6.6
+markdown>=3.5       # tools/build_docs.py
+pdfkit>=1.0         # tools/build_docs.py (also needs the wkhtmltopdf program)
+pillow>=10.0        # tools/make_icons.py

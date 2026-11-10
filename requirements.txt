@@ -1,0 +1,19 @@
+# PsyStat runtime dependencies (Python 3.11 or 3.12 recommended).
+# Lower bounds only: these are the oldest versions the code is written for. The exact versions used to build
+# and test the release are pinned in requirements-lock.txt.
+PyQt6>=6.6
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+statsmodels>=0.14.1
+matplotlib>=3.8
+scikit-learn>=1.3
+networkx>=3.2
+pingouin>=0.5.4
+semopy>=2.3.9
+factor_analyzer>=0.5.1
+prince>=0.13
+openpyxl>=3.1        # Excel (.xlsx) import / export
+xlrd>=2.0.1          # old Excel (.xls) import
+pyreadstat>=1.2      # SPSS (.sav) import
+mistune>=3.0         # renders the README / Examples Guide in the browser

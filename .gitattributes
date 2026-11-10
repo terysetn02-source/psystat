@@ -1,0 +1,17 @@
+# Normalise line endings in the repository; keep Windows scripts as CRLF
+* text=auto
+*.sh text eol=lf
+*.iss text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.dmg binary
+
+# Keep GitHub's language statistics focused on the app
+docs/*.html linguist-documentation
+docs/*.pdf linguist-documentation
+examples/* linguist-documentation
