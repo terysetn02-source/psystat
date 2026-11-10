@@ -1,0 +1,82 @@
+name: Bug report
+description: Something does not work, or a result looks wrong
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. **Never attach real participant data**: use a simulated example dataset or a small, fully anonymised file.
+  - type: input
+    id: version
+    attributes:
+      label: PsyStat version
+      description: Help → About (for example 1.2.0)
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Running from source on Linux
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install PsyStat?
+      options:
+        - Windows installer
+        - Windows portable zip
+        - macOS disk image
+        - From source (pip)
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Data Management
+        - Data Visualization
+        - Descriptives & Crosstabs
+        - Item Analysis & CVI
+        - Correlation
+        - Compare Means
+        - Analysis of Variance
+        - Regression
+        - Mediation Analysis
+        - Categorical PCA
+        - Cluster & Profile Analysis
+        - Forecasting / Growth Curves
+        - Exploratory Factor Analysis
+        - Confirmatory Factor Analysis
+        - SEM
+        - Network Analysis
+        - Power Analysis
+        - Bayesian Analysis
+        - Installation / start-up
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do (step by step), what did you expect, and what happened instead? Paste any error text.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: If a result looks wrong, what do other programs give?
+      description: For example output from R, SPSS or JASP for the same data and settings.
+  - type: textarea
+    id: data
+    attributes:
+      label: Example data (optional)
+      description: A few lines of an anonymised or simulated dataset that reproduce the problem.

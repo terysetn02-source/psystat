@@ -1,0 +1,163 @@
+name: Build release
+
+# Builds the Windows installer, the Windows portable zip and the two macOS disk images, tests each build with
+# `PsyStat --selftest`, and publishes them to a GitHub Release.
+#
+#   * Push a tag such as  v1.2.0  (the tag must match APP_VERSION in psystat.py)   -> builds and publishes a release
+#   * Or run it manually from the Actions tab                                     -> builds only (artifacts, no release)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Read version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        shell: bash
+        run: |
+          VERSION=$(python3 -c "import re;print(re.search(r'APP_VERSION\s*=\s*\"([^\"]+)\"',open('psystat.py').read()).group(1))")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "APP_VERSION is $VERSION"
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match APP_VERSION $VERSION in psystat.py"
+            exit 1
+          fi
+
+  windows:
+    name: Windows
+    needs: version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lock.txt pyinstaller
+
+      - name: Build application (PyInstaller)
+        run: pyinstaller --noconfirm psystat.spec
+
+      - name: Self-test the built application
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath "dist\PsyStat\PsyStat.exe" -ArgumentList "--selftest","selftest.log" -Wait -PassThru
+          if (Test-Path selftest.log) { Get-Content selftest.log }
+          if ($p.ExitCode -ne 0) { throw "Self-test failed with exit code $($p.ExitCode)" }
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$env:VERSION" installer\psystat_setup.iss
+          Move-Item "installer\Output\PsyStat-Setup-$env:VERSION.exe" "dist\PsyStat-Setup-$env:VERSION.exe"
+
+      - name: Portable zip
+        shell: pwsh
+        run: Compress-Archive -Path "dist\PsyStat\*" -DestinationPath "dist\PsyStat-Windows-$env:VERSION.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/PsyStat-Setup-*.exe
+            dist/PsyStat-Windows-*.zip
+
+  macos:
+    name: macOS ${{ matrix.label }}
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest          # Apple Silicon (arm64)
+            label: AppleSilicon
+          - runner: macos-15-intel        # Intel (x86_64). If GitHub renames or retires this runner, update the label.
+            label: Intel
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lock.txt pyinstaller
+
+      - name: Build application (PyInstaller)
+        run: pyinstaller --noconfirm psystat.spec
+
+      - name: Self-test the built application
+        run: |
+          ./dist/PsyStat.app/Contents/MacOS/PsyStat --selftest selftest.log || STATUS=$?
+          [ -f selftest.log ] && cat selftest.log
+          exit ${STATUS:-0}
+
+      - name: Create disk image
+        run: ./installer/build_macos_dmg.sh "$VERSION" "${{ matrix.label }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.label }}
+          path: dist/PsyStat-*-macOS-*.dmg
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [version, windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Checksums
+        run: |
+          cd artifacts
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Release notes from CHANGELOG
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" {f=1; next} f && /^## \[/ {exit} f' CHANGELOG.md > release-notes.md
+          {
+            echo
+            echo "### Installation"
+            echo "Windows: run the \`.exe\` installer (More info → Run anyway). macOS: open the \`.dmg\` for your Mac (Apple Silicon or Intel), drag PsyStat to Applications, then right-click → Open the first time."
+            echo "See the [User Manual](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/USER_MANUAL.md#2-installation)."
+          } >> release-notes.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: PsyStat ${{ needs.version.outputs.version }}
+          body_path: release-notes.md
+          files: artifacts/*

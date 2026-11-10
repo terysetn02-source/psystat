@@ -1,0 +1,1113 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>PsyStat User Manual (v1.2.0)</title><style>
+body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color:#1f2933; line-height:1.55;
+       max-width: 940px; margin: 0 auto; padding: 24px 28px 60px 28px; font-size: 15px; }
+h1 { font-size: 30px; color:#14213d; border-bottom: 3px solid #14213d; padding-bottom: 8px; margin-top: 8px; }
+h2 { font-size: 23px; color:#14213d; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 38px; }
+h3 { font-size: 18px; color:#1d3557; margin-top: 26px; }
+h4 { font-size: 15px; color:#1d3557; margin-top: 18px; }
+a { color:#1d4ed8; text-decoration: none; } a:hover { text-decoration: underline; }
+code { background:#eef2f7; padding: 1px 5px; border-radius: 3px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+pre { background:#0f172a; color:#e2e8f0; padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; margin: 12px 0; width: 100%; font-size: 14px; }
+th, td { border: 1px solid #cbd5e1; padding: 6px 9px; text-align: left; vertical-align: top; }
+th { background:#e8eef6; }
+tr:nth-child(even) td { background:#f8fafc; }
+blockquote { border-left: 4px solid #94a3b8; margin: 14px 0; padding: 4px 14px; background:#f1f5f9; color:#334155; }
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 28px 0; }
+img { max-width: 100%; }
+.toc { background:#f8fafc; border:1px solid #e2e8f0; border-radius: 6px; padding: 8px 18px; }
+@media print { body { max-width: none; padding: 0; } h2 { page-break-before: auto; } pre, table, blockquote { page-break-inside: avoid; } }
+</style></head><body><h1 id="psystat-user-manual">PsyStat User Manual</h1>
+<p><strong>Version 1.2.0</strong> &nbsp;|&nbsp; A desktop statistics application for psychology and the social sciences</p>
+<p><strong>Author:</strong> Tery Setiawan (Universitas Kristen Maranatha &amp; Radboud University)<br />
+<strong>Licence:</strong> MIT &nbsp;|&nbsp; <strong>Source code:</strong> <a href="https://github.com/terysetn02-source/psystat">https://github.com/terysetn02-source/psystat</a></p>
+<blockquote>
+<p><strong>How to use this manual.</strong> If you are new to PsyStat, read Chapters 1–4 (about 15 minutes) and then jump to the chapter for the analysis you need. Every analysis chapter has the same layout: <em>when to use it</em>, <em>how to run it</em>, <em>what you get</em>, and <em>how to report it</em>. Chapter 25 contains a step-by-step tutorial for every module using the example datasets that come with the app.</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-introduction">Introduction</a></li>
+<li><a href="#2-installation">Installation</a></li>
+<li><a href="#3-quick-start-10-minutes">Quick start (10 minutes)</a></li>
+<li><a href="#4-the-psystat-interface">The PsyStat interface</a></li>
+<li><a href="#5-data-management">Data Management</a></li>
+<li><a href="#6-data-visualization">Data Visualization</a></li>
+<li><a href="#7-descriptives--crosstabs">Descriptives &amp; Crosstabs</a></li>
+<li><a href="#8-item-analysis--cvi">Item Analysis &amp; CVI</a></li>
+<li><a href="#9-correlation">Correlation</a></li>
+<li><a href="#10-compare-means-t-tests">Compare Means (t-tests)</a></li>
+<li><a href="#11-analysis-of-variance">Analysis of Variance</a></li>
+<li><a href="#12-regression">Regression</a></li>
+<li><a href="#13-mediation-analysis">Mediation Analysis</a></li>
+<li><a href="#14-categorical-pca-catpca">Categorical PCA (CATPCA)</a></li>
+<li><a href="#15-cluster--profile-analysis-lca">Cluster &amp; Profile Analysis (LCA)</a></li>
+<li><a href="#16-forecasting-time-series--latent-growth-curves">Forecasting (Time Series) &amp; Latent Growth Curves</a></li>
+<li><a href="#17-exploratory-factor-analysis-efa">Exploratory Factor Analysis (EFA)</a></li>
+<li><a href="#18-confirmatory-factor-analysis-cfa">Confirmatory Factor Analysis (CFA)</a></li>
+<li><a href="#19-structural-equation-modeling-sem">Structural Equation Modeling (SEM)</a></li>
+<li><a href="#20-network-analysis">Network Analysis</a></li>
+<li><a href="#21-power-analysis">Power Analysis</a></li>
+<li><a href="#22-bayesian-analysis">Bayesian Analysis</a></li>
+<li><a href="#23-exporting-saving-and-settings">Exporting, saving and settings</a></li>
+<li><a href="#24-autosave-and-crash-recovery">Autosave and crash recovery</a></li>
+<li><a href="#25-tutorials-with-the-example-datasets">Tutorials with the example datasets</a></li>
+<li><a href="#26-troubleshooting--faq">Troubleshooting &amp; FAQ</a></li>
+<li><a href="#27-statistical-notes-limitations-and-references">Statistical notes, limitations and references</a></li>
+<li><a href="#28-how-to-cite-psystat">How to cite PsyStat</a></li>
+</ol>
+<hr />
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="11-what-is-psystat">1.1 What is PsyStat?</h3>
+<p>PsyStat is a free, open-source desktop application for statistical analysis, designed for students, psychologists and social scientists. It sits between two extremes: programming environments such as R or Python (powerful, but with a steep learning curve) and commercial point-and-click packages (easy, but expensive and rigid). With PsyStat you load a dataset, choose variables from a list, press <strong>Run</strong>, and receive APA-styled tables and publication-ready charts. Every analysis is computed with established scientific libraries (SciPy, statsmodels, pingouin, semopy, factor_analyzer, networkx and others), and many analyses also print <strong>reproducible R or Python syntax</strong> so you can verify or extend them.</p>
+<h3 id="12-what-can-it-do">1.2 What can it do?</h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Modules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data</strong></td>
+<td>Import CSV / Excel / SPSS; spreadsheet-style editing; compute, recode, reverse-score, dummy-code; undo/redo; autosave</td>
+</tr>
+<tr>
+<td><strong>Describe</strong></td>
+<td>Data Visualization, Descriptives &amp; Crosstabs, Item Analysis &amp; CVI, Correlation</td>
+</tr>
+<tr>
+<td><strong>Compare &amp; predict</strong></td>
+<td>Compare Means, ANOVA / ANCOVA / MANOVA / repeated measures, Regression (OLS with hierarchical blocks, polynomial, logistic, multinomial, ordinal, ridge / lasso), Mediation</td>
+</tr>
+<tr>
+<td><strong>Dimension reduction &amp; groups</strong></td>
+<td>CATPCA, Cluster &amp; Profile Analysis (LCA), Exploratory Factor Analysis</td>
+</tr>
+<tr>
+<td><strong>Latent-variable models</strong></td>
+<td>Confirmatory Factor Analysis, Structural Equation Modeling (graphical builder + syntax)</td>
+</tr>
+<tr>
+<td><strong>Time &amp; networks</strong></td>
+<td>Forecasting (exponential smoothing), Latent Growth Curve Models, Psychometric Network Analysis</td>
+</tr>
+<tr>
+<td><strong>Planning &amp; inference</strong></td>
+<td>Power Analysis (a priori, post-hoc, sensitivity), Bayesian Analysis (BF₁₀/BF₀₁, credible intervals)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-what-psystat-is-not">1.3 What PsyStat is <em>not</em></h3>
+<ul>
+<li>It is not a replacement for statistical training. The app explains each analysis and flags assumption problems, but <strong>you</strong> remain responsible for choosing appropriate methods and interpreting them.</li>
+<li>It does not currently support multilevel/mixed-effects models, polychoric/ordinal SEM estimators (WLSMV), multiple-group models, or imputation. Where a better option exists elsewhere, the app says so (for example, a warning appears when ordinal Likert indicators are used in CFA/SEM).</li>
+<li>Results are computed with documented, tested algorithms, but no software is free of bugs. For high-stakes work, verify key results with a second program, and please report discrepancies on GitHub.</li>
+</ul>
+<h3 id="14-system-requirements">1.4 System requirements</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Windows</th>
+<th>macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating system</td>
+<td>Windows 10 or 11 (64-bit)</td>
+<td>macOS 12 Monterey or newer</td>
+</tr>
+<tr>
+<td>Processor</td>
+<td>Any 64-bit CPU</td>
+<td>Apple Silicon (M1–M4) <strong>or</strong> Intel</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>4 GB (8 GB recommended)</td>
+<td>4 GB (8 GB recommended)</td>
+</tr>
+<tr>
+<td>Disk space</td>
+<td>about 1 GB</td>
+<td>about 1 GB</td>
+</tr>
+<tr>
+<td>Screen</td>
+<td>1366 × 768 or larger (1920 × 1080 recommended)</td>
+<td>same</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-installation">2. Installation</h2>
+<h3 id="21-windows">2.1 Windows</h3>
+<ol>
+<li>Go to the <strong>Releases</strong> page of the project on GitHub and download <code>PsyStat-Setup-x.y.z.exe</code> (installer) — or <code>PsyStat-Windows-x.y.z.zip</code> if you prefer a portable copy that needs no installation.</li>
+<li>Double-click the installer and follow the steps. PsyStat is added to the Start menu (and optionally the desktop).</li>
+<li><strong>First launch — SmartScreen.</strong> Because the app is distributed free of charge and is not signed with a paid code-signing certificate, Windows may show <em>"Windows protected your PC"</em>. Click <strong>More info → Run anyway</strong>. This happens once.</li>
+<li>Start <strong>PsyStat</strong> from the Start menu. The first start can take 10–30 seconds while the scientific libraries load; later starts are faster.</li>
+</ol>
+<h3 id="22-macos">2.2 macOS</h3>
+<ol>
+<li>Download the disk image that matches your Mac:
+   * <code>PsyStat-x.y.z-macOS-AppleSilicon.dmg</code> for Macs with an M-series chip, or
+   * <code>PsyStat-x.y.z-macOS-Intel.dmg</code> for Intel Macs.
+   (Not sure? Apple menu → <strong>About This Mac</strong>: "Chip: Apple M…" means Apple Silicon; "Processor: Intel…" means Intel.)</li>
+<li>Open the <code>.dmg</code> and drag <strong>PsyStat</strong> into the <strong>Applications</strong> folder.</li>
+<li><strong>First launch — Gatekeeper.</strong> The app is not notarised by Apple, so macOS will say it "cannot be opened because the developer cannot be verified". To open it once:
+   * In <strong>Applications</strong>, <strong>right-click (or Control-click) PsyStat → Open → Open</strong>; or
+   * Open <strong>System Settings → Privacy &amp; Security</strong>, scroll to the message about PsyStat and click <strong>Open Anyway</strong>.
+   After this, PsyStat opens normally with a double-click.</li>
+<li>If macOS says the app is "damaged", open <strong>Terminal</strong> and run: <code>xattr -dr com.apple.quarantine /Applications/PsyStat.app</code></li>
+</ol>
+<h3 id="23-running-from-source-any-system-with-python">2.3 Running from source (any system with Python)</h3>
+<p>Advanced users and contributors can run PsyStat directly from the source code. Python <strong>3.11 or 3.12</strong> is recommended.</p>
+<pre><code class="language-bash">git clone https://github.com/terysetn02-source/psystat.git
+cd psystat
+python -m venv .venv
+# Windows:  .venv\Scripts\activate        macOS/Linux:  source .venv/bin/activate
+pip install -r requirements.txt
+python psystat.py
+</code></pre>
+<h3 id="24-updating-and-uninstalling">2.4 Updating and uninstalling</h3>
+<ul>
+<li><strong>Update:</strong> download the newest installer or disk image and install it over the old version. Your data files are never stored inside the app, so nothing is lost.</li>
+<li><strong>Uninstall (Windows):</strong> Settings → Apps → PsyStat → Uninstall. <strong>(macOS):</strong> drag PsyStat from Applications to the Bin.</li>
+</ul>
+<hr />
+<h2 id="3-quick-start-10-minutes">3. Quick start (10 minutes)</h2>
+<p>This walk-through loads sample data, runs three analyses and exports the results.</p>
+<p><strong>Step 1 – Load the sample data.</strong> In the menu bar choose <strong>File → Load Sample Data → Experiment Example (N=300) — Contact Study</strong>. The data appear in the <strong>Dataset</strong> tab of <em>Data Management</em>.</p>
+<p><strong>Step 2 – Look at the data.</strong> Scroll the table. Open the <strong>Variable Info</strong> tab to see each variable's type and measurement scale. Missing values appear as empty cells.</p>
+<p><strong>Step 3 – Descriptives.</strong> Click <strong>Descriptives &amp; Crosstabs</strong> in the top navigation bar. In <em>Variables to Analyze</em> select <code>prejudice_post</code> and <code>contact_quality_post</code> (Ctrl/Cmd-click selects several), tick <strong>Generate Descriptives</strong>, and press <strong>▶ Run Selected Analysis</strong>. A table with N, mean, SD, skewness and kurtosis appears on the right.</p>
+<p><strong>Step 4 – An independent-samples t-test.</strong> Open <strong>Compare Means</strong>. Choose <em>Independent Samples</em>, set <strong>Dependent Variable</strong> = <code>contact_quality_post</code> and <strong>Grouping Variable</strong> = <code>condition</code>, and press <strong>▶ Run Comparison</strong>. You should see that the Contact group scored much higher than the Control group (t ≈ 10.9, large effect, Cohen's <em>d</em> ≈ 1.3). A raincloud plot is drawn on a second tab.</p>
+<p><strong>Step 5 – A chart.</strong> Open <strong>Data Visualization</strong>, choose <strong>Plot Type = Bar Chart</strong>, X = <code>condition</code>, Y = <code>prejudice_post</code>, and press <strong>▶ Generate Graph</strong>. Use <strong>↗ Pop Out Chart</strong> to open it in its own window.</p>
+<p><strong>Step 6 – Export.</strong> On any results panel click <strong>💾 Export to HTML/Word</strong>, choose a file name and open the file in a browser or in Word.</p>
+<p>That is the whole workflow: <strong>load → choose variables → run → read → export</strong>. The remaining chapters explain each module.</p>
+<hr />
+<h2 id="4-the-psystat-interface">4. The PsyStat interface</h2>
+<h3 id="41-overview">4.1 Overview</h3>
+<p>The window has four areas:</p>
+<ol>
+<li><strong>Menu bar</strong> (top): File, Edit, Settings, Help.</li>
+<li><strong>Module bar</strong> (below the menu): two rows of buttons, one per module. Click a button to switch module.</li>
+<li><strong>Settings panel</strong> (left of each module): variable lists, options and the <strong>▶ Run</strong> button. You can drag the divider between the left panel and the results to resize it, or drag it all the way left to hide the panel.</li>
+<li><strong>Results panel</strong> (right): every run opens a <strong>new tab</strong> stamped with the time (for example <em>T-Test (14:32:07)</em>), so earlier results are never overwritten. Close a tab with its ✕. Charts open as tabs too and can be popped out.</li>
+</ol>
+<h3 id="42-menus">4.2 Menus</h3>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File</strong></td>
+<td><em>New Window (Work on 2nd Dataset)</em>; <em>Open Dataset (CSV, Excel, SPSS)</em>; <strong>Load Sample Data</strong> (the four example datasets and the Examples Guide); <em>Save Dataset As…</em></td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td><em>Undo</em> (Ctrl/Cmd + Z), <em>Redo</em> (Ctrl/Cmd + Y)</td>
+</tr>
+<tr>
+<td><strong>Settings</strong></td>
+<td><em>Toggle Light/Dark Mode</em>; <em>Decimal Formatting</em> (2, 3 or 4 decimals in all tables)</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td><em>User Manual</em> (opens in the browser as HTML or as PDF); <em>README / About PsyStat</em>; <em>Example Datasets Guide</em>; <em>About</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-choosing-variables">4.3 Choosing variables</h3>
+<p>Most modules use list boxes labelled for their purpose (for example <em>Dependent Variables</em>, <em>Fixed Factors</em>, <em>Covariates</em>). You can</p>
+<ul>
+<li><strong>click</strong> a variable to select it, <strong>Ctrl/Cmd-click</strong> to add more, <strong>Shift-click</strong> to select a range;</li>
+<li>use the <strong>🔍 Pop-up Select</strong> button above a list to open a larger selection window (helpful for datasets with many variables), and <strong>Clear</strong> to empty the list;</li>
+<li><strong>drag</strong> a variable name from the <em>Available Variables</em> panel onto a field (where the module offers it).</li>
+</ul>
+<h3 id="44-reading-results">4.4 Reading results</h3>
+<p>Tables follow <strong>APA 7 style</strong>: <em>M</em>, <em>SD</em>, <em>t</em>, <em>F</em>, <em>p</em> are italicised, <em>p</em> values are reported without a leading zero (<em>p</em> = .032; <em>p</em> &lt; .001), and significant results are highlighted. Under most tables a grey <strong>Note</strong> explains the statistic, states assumptions, and gives the reference. Many analyses end with a ready-to-edit <strong>APA results sentence</strong> and, where applicable, <strong>Reproducible Syntax</strong> in R and Python.</p>
+<h3 id="45-light-and-dark-mode">4.5 Light and dark mode</h3>
+<p><strong>Settings → Toggle Light/Dark Mode</strong> switches the whole interface. Charts redraw in the matching colours.</p>
+<h3 id="46-several-datasets-at-once">4.6 Several datasets at once</h3>
+<p><strong>File → New Window (Work on 2nd Dataset)</strong> opens a second, independent PsyStat window, for example to compare two data files side by side.</p>
+<hr />
+<h2 id="5-data-management">5. Data Management</h2>
+<p><em>Module bar: </em><em>Data Management</em><em>.</em> This is where you load, inspect, edit and transform data. It has two tabs: <strong>📊 Dataset</strong> (the spreadsheet) and <strong>📋 Variable Info</strong> (a description of each variable).</p>
+<h3 id="51-loading-data">5.1 Loading data</h3>
+<ul>
+<li><strong>File → Open Dataset (CSV, Excel, SPSS)</strong>, or the <strong>📂 Load CSV/Excel/SPSS</strong> button in Data Management.</li>
+<li>Supported formats: <strong>.csv</strong>, <strong>.xlsx / .xls</strong> (Excel) and <strong>.sav</strong> (SPSS).</li>
+<li>Put <strong>variable names in the first row</strong> and one participant per row. Avoid spaces and special characters in variable names where you can (<code>life_satisfaction_post</code> rather than <code>Life satisfaction (post)</code>), and code missing values as empty cells.</li>
+<li>To practise, use <strong>File → Load Sample Data</strong> (see Chapter 25).</li>
+</ul>
+<h3 id="52-the-dataset-tab-spreadsheet">5.2 The Dataset tab (spreadsheet)</h3>
+<p>Double-click a cell to edit it. Toolbar buttons:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🆕 New Sheet</td>
+<td>Start an empty dataset</td>
+</tr>
+<tr>
+<td>✚ Add Row / ✚ Add N Rows</td>
+<td>Append one or <em>N</em> blank rows</td>
+</tr>
+<tr>
+<td>✚ Add Variable</td>
+<td>Add a new empty variable (column)</td>
+</tr>
+<tr>
+<td>🗑 Delete Row(s) / 🗑 Delete Col</td>
+<td>Delete the selected rows or column</td>
+</tr>
+<tr>
+<td>✏ Rename Column</td>
+<td>Rename the selected variable</td>
+</tr>
+<tr>
+<td>⬇ Fill Down</td>
+<td>Copy the value of the first selected cell down the selection</td>
+</tr>
+<tr>
+<td>📋 Paste from Clipboard</td>
+<td>Paste a block copied from Excel or another table</td>
+</tr>
+<tr>
+<td>📄 Copy Selection</td>
+<td>Copy the selected cells</td>
+</tr>
+<tr>
+<td>💾 Save Dataset</td>
+<td>Save to CSV or Excel</td>
+</tr>
+<tr>
+<td>↩ Undo / ↪ Redo</td>
+<td>Step backwards/forwards through your edits (also Ctrl/Cmd + Z / Y)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data-entry safety.</strong> When you type into a <em>numeric</em> column, PsyStat only accepts a valid number (a decimal comma such as <code>1,5</code> is understood as 1.5). If you type text such as <code>5.a2</code>, the entry is <strong>rejected</strong>, the previous value is restored and a message explains why. This prevents a single typo from turning a whole numeric column into text. A brand-new empty variable, or a column that already holds text, accepts text.</p>
+<p>A <strong>History</strong> list shows the operations performed on the dataset in this session.</p>
+<h3 id="53-the-variable-info-tab">5.3 The Variable Info tab</h3>
+<p>One row per variable, with editable columns:</p>
+<ul>
+<li><strong>Variable Name</strong>, <strong>Variable Label</strong> (a descriptive title) and <strong>Value Labels</strong> (for example <code>1=Low, 5=High</code>);</li>
+<li><strong>Measurement Scale</strong>: <em>Nominal, Ordinal, Interval</em> or <em>Ratio</em>;</li>
+<li><strong>Data Type</strong>: <em>Numeric (Float), Integer, String/Text</em> or <em>Category</em>;</li>
+<li><strong>Missing Values</strong>: the number of empty cells (read-only).</li>
+</ul>
+<p>Setting the correct scale and type helps PsyStat offer suitable analyses (for example, treating text as a grouping variable).</p>
+<h3 id="54-transforming-data">5.4 Transforming data</h3>
+<p>All tools below sit in the left panel of Data Management. Most have a <strong>Create as new variable</strong> checkbox: leave it ticked to keep the original variable and create a new one (recommended), or untick it to overwrite.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Use it to</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sum / Mean / Subtract / Z-Score</strong></td>
+<td>Create a scale score or standardise</td>
+<td>Select the variables under <em>Select Variables</em>, type a <em>New Name</em>, press <strong>Sum (Total)</strong>, <strong>Mean</strong>, <strong>Subtract (V1−V2)</strong> or <strong>Z-Score</strong></td>
+</tr>
+<tr>
+<td><strong>Duplicate &amp; Convert Variable</strong></td>
+<td>Make a numeric copy of a text variable</td>
+<td>Pick the <em>Original Variable</em>, name the copy, tick <strong>Force to Numeric (unmatched text becomes missing)</strong> if needed, press <strong>Duplicate</strong></td>
+</tr>
+<tr>
+<td><strong>Interaction &amp; Dummy Variables</strong></td>
+<td>Build a product term for moderation, or dummy codes</td>
+<td><strong>Multiply &amp; Create</strong> multiplies two variables. <strong>Generate Dummy</strong> offers <em>Median Split (0/1)</em>, <em>Mean Split (0/1)</em> and <em>One-Hot Encoding</em></td>
+</tr>
+<tr>
+<td><strong>Recode Variable</strong></td>
+<td>Change values</td>
+<td>Choose the variable and type rules such as <code>Male=1, Female=2, 99=NaN</code> (comma-separated; <code>NaN</code> means missing). Press <strong>Recode Values</strong></td>
+</tr>
+<tr>
+<td><strong>Reverse-Score Variables</strong></td>
+<td>Reverse negatively worded Likert items</td>
+<td>Select the items, enter the scale <strong>Min</strong> and <strong>Max</strong> (for a 1–5 item: 1 and 5), press <strong>Reverse Selected</strong>. A score <em>x</em> becomes <em>Min + Max − x</em></td>
+</tr>
+<tr>
+<td><strong>Remove Cases (Rows)</strong></td>
+<td>Exclude participants</td>
+<td>Choose a variable, a condition (<code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>contains</code>, <code>is missing</code>) and a value, then <strong>Remove Matching Rows</strong>; or list row numbers and press <strong>Remove by Row Number</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Tip.</strong> Removing cases changes your data. Press <strong>↩ Undo</strong> if you remove the wrong rows, and save the dataset first (<strong>💾 Save Dataset</strong>) if you want a copy of the full data.</p>
+</blockquote>
+<h3 id="55-saving">5.5 Saving</h3>
+<p><strong>File → Save Dataset As…</strong> or <strong>💾 Save Dataset</strong> writes the current data to CSV or Excel. PsyStat also autosaves your work in the background (Chapter 24), but <strong>always save your data yourself</strong> before closing.</p>
+<hr />
+<h2 id="6-data-visualization">6. Data Visualization</h2>
+<p><em>Module bar: </em><em>Data Visualization</em><em>.</em> Create publication-quality charts.</p>
+<h3 id="61-running-a-chart">6.1 Running a chart</h3>
+<ol>
+<li>Choose a <strong>Plot Type</strong>: <em>Histogram, Scatterplot, Bar Chart, Line Plot</em> or <em>Moderation Chart (Interaction)</em>.</li>
+<li>Pick the <strong>X-Axis Variable</strong>, the <strong>Y-Axis (Target Variable)</strong> and, for a moderation chart, the <strong>Moderator (Z) Variable</strong>.</li>
+<li>Adjust <strong>Aesthetics &amp; Design</strong>: <em>Color Palette</em> (Standard, Pastel, Seaborn, Monochrome), <em>Show Gridlines</em>, and <em>Transparency</em>.</li>
+<li>Press <strong>▶ Generate Graph</strong>. Two tabs appear: <strong>Graph</strong> and <strong>Chart Guide</strong> (a plain-language explanation of how to read that chart).</li>
+</ol>
+<p>Use <strong>↗ Pop Out Chart</strong> to open the chart in a separate window. Chart windows have a toolbar for zooming and panning, and a <strong>Save 300 DPI</strong> option for journal figures.</p>
+<h3 id="62-which-chart-when">6.2 Which chart when?</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Chart</th>
+<th>Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What does one variable look like?</td>
+<td>Histogram</td>
+<td>X = numeric</td>
+</tr>
+<tr>
+<td>How are two numeric variables related?</td>
+<td>Scatterplot</td>
+<td>X, Y numeric</td>
+</tr>
+<tr>
+<td>Group means</td>
+<td>Bar Chart</td>
+<td>X = grouping (categorical), Y = numeric</td>
+</tr>
+<tr>
+<td>Change over time</td>
+<td>Line Plot</td>
+<td>X = time, Y = numeric</td>
+</tr>
+<tr>
+<td>Does the X→Y relationship depend on a third variable?</td>
+<td>Moderation Chart</td>
+<td>X, Y numeric; Z = moderator. Lines show the X→Y slope at low, average and high levels of Z</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-descriptives--crosstabs">7. Descriptives &amp; Crosstabs</h2>
+<p><em>Module bar: </em><em>Descriptives &amp; Crosstabs</em><em>.</em></p>
+<h3 id="71-descriptive-statistics-and-frequencies">7.1 Descriptive statistics and frequencies</h3>
+<ol>
+<li>Under <strong>Variables to Analyze</strong> select one or more variables (select none to analyse all).</li>
+<li>Tick <strong>Generate Descriptives (Mean, SD, etc.)</strong> and/or <strong>Generate Frequencies</strong>.</li>
+<li>Press <strong>▶ Run Selected Analysis</strong>.</li>
+</ol>
+<p><strong>You get:</strong> for each numeric variable <em>N (valid)</em>, <em>Mean</em> with its 95% CI, <em>Median</em>, <em>SD</em>, <em>SE</em>, <em>Min</em>, <em>Max</em>, <em>Skewness</em>, <em>Kurtosis</em>, and two normality tests (<em>Shapiro–Wilk</em> and <em>Kolmogorov–Smirnov with Lilliefors correction</em>). A table reports <strong>missing values</strong> per variable, and a note states how many rows were lost to listwise deletion. Frequency tables list counts and percentages for each category.</p>
+<p><strong>How to read normality tests.</strong> With large samples these tests flag trivial departures, and with small samples they lack power. Judge normality by the <strong>skewness and kurtosis</strong> (|skew| &lt; 2 and |kurtosis| &lt; 7 are common rules of thumb for approximate normality; West, Finch &amp; Curran, 1995) <em>and</em> by a histogram, not by <em>p</em> alone.</p>
+<h3 id="72-crosstabs">7.2 Crosstabs</h3>
+<ol>
+<li>Select <strong>Row Variables</strong> and <strong>Column Variables</strong> (categorical).</li>
+<li>Choose which percentages to show: <strong>Row</strong>, <strong>Column</strong>, <strong>Total</strong>; tick <strong>Chi-Square Test</strong> for a test of independence.</li>
+<li>Press <strong>▶ Run Crosstab</strong>.</li>
+</ol>
+<p><strong>You get:</strong> the contingency table with counts and the chosen percentages, and the <strong>Chi-Square Test of Independence</strong> (χ², df, <em>p</em>). The note warns when expected cell counts are small (&lt; 5), in which case the chi-square approximation is unreliable and categories should be combined or an exact test used.</p>
+<hr />
+<h2 id="8-item-analysis--cvi">8. Item Analysis &amp; CVI</h2>
+<p><em>Module bar: </em><em>Item Analysis &amp; CVI</em><em>.</em> Two tools for building and evaluating questionnaires.</p>
+<h3 id="81-classical-item-analysis-reliability">8.1 Classical item analysis (reliability)</h3>
+<p><strong>When to use it:</strong> you have a multi-item scale and want its internal consistency and the quality of each item.</p>
+<ol>
+<li><strong>Reverse-score negatively worded items first</strong> (Chapter 5.4). Otherwise α is badly underestimated.</li>
+<li>Under <strong>Select Items to Analyze</strong> choose the items of <strong>one scale</strong>.</li>
+<li>Press <strong>▶ Run Item Analysis</strong>.</li>
+</ol>
+<p><strong>You get:</strong> the overall <strong>Cronbach's α</strong>, <strong>McDonald's ω</strong> (estimated from a one-factor model; it does not assume equal loadings and is often the more accurate estimate), and <strong>split-half reliability</strong> (Spearman–Brown); then, per item, <em>Mean (Difficulty)</em>, <em>SD</em>, <em>Item-Rest Correlation (Discrimination)</em>, <em>Cronbach's α if Deleted</em> and <em>Factor Loading (λ)</em>. A ready-made APA sentence summarises the reliability. A note reports how many rows were lost to listwise deletion.</p>
+<p><strong>Interpreting.</strong> α ≥ .70 is usually considered acceptable for research use (.80+ good), but α rises with the number of items and does not prove unidimensionality — check dimensionality with EFA/CFA. An item with an item-rest correlation below about .30, or whose removal <em>raises</em> α noticeably, is a candidate for revision.</p>
+<h3 id="82-content-validity-index-i-cvi">8.2 Content Validity Index (I-CVI)</h3>
+<p><strong>When to use it:</strong> experts have rated how relevant each item is, and you want agreement indices.</p>
+<p><strong>Data layout.</strong> One <strong>row per item</strong> and one <strong>column per expert</strong> (as in <code>cvi_expert_ratings_example.csv</code>).</p>
+<ol>
+<li>Under <strong>Select Expert Rating Columns</strong> select all the expert columns.</li>
+<li>Set <strong>Rating counts as 'Relevant' if greater than</strong>: for a 4-point relevance scale (1 = not relevant … 4 = highly relevant) enter <strong>2.5</strong> so that ratings of 3 and 4 count as relevant. For 0/1 coding enter <strong>0.5</strong>.</li>
+<li>Press <strong>▶ Calculate I-CVI</strong>.</li>
+</ol>
+<p><strong>You get:</strong> for every item the number of experts rating it relevant and the <strong>I-CVI</strong> (relevant ratings ÷ number of experts), with a status, plus the scale-level <strong>S-CVI/Ave</strong> (mean I-CVI) and <strong>S-CVI/UA</strong> (proportion of items on which all experts agree).</p>
+<p><strong>Guidelines (Lynn, 1986; Polit &amp; Beck, 2006):</strong> with 3–5 experts every item should reach I-CVI = 1.00; with 6 or more experts I-CVI ≥ .78 is acceptable. S-CVI/Ave ≥ .90 is recommended for the scale as a whole. Items marked <em>Revise/Reject</em> should be reworded or dropped.</p>
+<hr />
+<h2 id="9-correlation">9. Correlation</h2>
+<p><em>Module bar: </em><em>Correlation</em><em>.</em></p>
+<ol>
+<li>Select <strong>two or more variables</strong>.</li>
+<li>Choose the <strong>Method</strong>: <em>Pearson (Parametric)</em> for linear relationships between roughly normal continuous variables; <em>Spearman (Non-Parametric)</em> for ordinal data, outliers or monotonic non-linear relations.</li>
+<li>Choose <strong>Missing Value Handling</strong>: <em>Listwise</em> (one common sample for all correlations) or <em>Pairwise</em> (uses all available data for each pair; the <em>N</em> then differs between cells).</li>
+<li>Choose a <strong>p-value correction</strong> for the many tests in a matrix: <em>None (raw p-values)</em>, <em>Bonferroni</em>, or <em>Benjamini–Hochberg (FDR)</em>.</li>
+<li>Press <strong>▶ Run Correlation</strong>.</li>
+</ol>
+<p><strong>You get four tabs:</strong> <strong>Correlation</strong> (the matrix), <strong>p-values</strong>, <strong>95% CIs</strong> (Fisher's <em>z</em> intervals) and a <strong>Heatmap</strong>.</p>
+<p><strong>Interpreting.</strong> Cohen's (1988) guidelines: |<em>r</em>| ≈ .10 small, .30 medium, .50 large. A correlation is not causation, and with many variables some "significant" results arise by chance, which is why a correction is offered. Always look at the scatterplot (Chapter 6) before trusting <em>r</em>.</p>
+<p><strong>Reporting example (experiment data).</strong> <em>"Pre-test prejudice and intergroup anxiety were positively correlated, r(298) = .45, 95% CI [.35, .53], p &lt; .001."</em></p>
+<hr />
+<h2 id="10-compare-means-t-tests">10. Compare Means (t-tests)</h2>
+<p><em>Module bar: </em><em>Compare Means</em><em>.</em></p>
+<h3 id="101-choosing-the-test">10.1 Choosing the test</h3>
+<p>Under <strong>Test Design</strong> choose:</p>
+<ul>
+<li><strong>Independent Samples</strong> — two <em>different</em> groups (for example Contact vs Control). Needs a <strong>Dependent Variable</strong> (numeric) and a <strong>Grouping Variable</strong> with exactly two categories.</li>
+<li><strong>Paired Samples</strong> — the <em>same</em> people measured twice (for example pre and post). Select the two measurements.</li>
+</ul>
+<p>Under <strong>Assumption</strong> choose <strong>Parametric (T-Tests)</strong> or <strong>Non-Parametric (U/W)</strong> (Mann–Whitney <em>U</em> for independent groups, Wilcoxon signed-rank <em>W</em> for paired data). The option <strong>Use Welch's correction if Levene's test is significant</strong> (independent samples) makes PsyStat check the equal-variance assumption with Levene's test and switch to Welch's <em>t</em>-test, which does not assume equal variances, when the assumption is violated; otherwise the classic Student <em>t</em>-test is reported. The output states which test was used.</p>
+<p>Press <strong>▶ Run Comparison</strong>.</p>
+<h3 id="102-what-you-get">10.2 What you get</h3>
+<ul>
+<li><strong>Compare Means</strong> table: descriptive statistics per group (<em>Mean, Median, SD, SE</em>, 95% CI, skewness, kurtosis).</li>
+<li><strong>T-Test</strong> table: the test <em>Statistic</em>, <em>p-value</em>, and <strong>Effect Size</strong> (Cohen's <em>d</em>; Levene's test for equal variances for independent groups).</li>
+<li><strong>Raincloud</strong> plot: distribution, individual points and summary per group.</li>
+</ul>
+<h3 id="103-interpreting-and-reporting">10.3 Interpreting and reporting</h3>
+<p>Cohen's <em>d</em>: .2 small, .5 medium, .8 large. <strong>Always report the effect size, not only <em>p</em>.</strong></p>
+<p><em>"Participants in the contact condition reported higher contact quality (M = 5.06, SD = 0.84) than controls (M = 3.93, SD = 0.95), t(295) = 10.93, p &lt; .001, d = 1.27."</em> (These are the values you obtain from the example experiment dataset; Levene's test was not significant, so Student's <em>t</em> was used.)</p>
+<p>If assumptions are badly violated (strong outliers, tiny samples), switch to the <strong>Non-Parametric</strong> option or use the <strong>Bayesian</strong> t-test (Chapter 22).</p>
+<hr />
+<h2 id="11-analysis-of-variance">11. Analysis of Variance</h2>
+<p><em>Module bar: </em><em>Analysis of Variance</em><em>.</em> Compare means across <strong>three or more groups</strong> (or across several factors), optionally adjusting for covariates, and analyse <strong>repeated measures</strong>.</p>
+<h3 id="111-between-subjects-designs-anova-ancova-manova">11.1 Between-subjects designs (ANOVA, ANCOVA, MANOVA)</h3>
+<ol>
+<li><strong>Dependent Variables:</strong> select <strong>one</strong> numeric variable for ANOVA/ANCOVA, or <strong>two or more</strong> for MANOVA.</li>
+<li><strong>Fixed Factors (Categorical):</strong> select one or more grouping variables.</li>
+<li><strong>Covariates (Optional Metric):</strong> add numeric control variables for ANCOVA.</li>
+<li>Options: <strong>Full Factorial (include interaction effects)</strong>; <strong>Also run Kruskal–Wallis</strong> (a non-parametric one-way alternative); <strong>Include Descriptive Statistics</strong>.</li>
+<li>Press <strong>▶ Run Analysis of Variance</strong>.</li>
+</ol>
+<p><strong>You get:</strong></p>
+<ul>
+<li>an <strong>ANOVA</strong> table with effect sizes (η², partial η²), and assumption checks such as <strong>Levene's test</strong>;</li>
+<li><strong>pairwise comparisons</strong> (post-hoc) with correction for multiple testing (Tukey, Games–Howell when variances are unequal, Bonferroni; and Dunn's test after Kruskal–Wallis);</li>
+<li>for ANCOVA, <strong>adjusted group means</strong> and a check of the <strong>homogeneity of regression slopes</strong> assumption;</li>
+<li>for several dependent variables, a <strong>MANOVA</strong> tab (Wilks' λ, Pillai's trace) with Box's M for covariance homogeneity;</li>
+<li>a <strong>Raincloud</strong> plot per group and a <strong>Syntax</strong> tab with reproducible <strong>R</strong> (<code>ez</code>) and <strong>Python</strong> (<code>pingouin</code>) code.</li>
+</ul>
+<p><strong>Interpreting.</strong> η² of about .01 is small, .06 medium and .14 large (Cohen, 1988). A significant omnibus <em>F</em> only says that <em>some</em> means differ; use the pairwise table to see which. With a significant <strong>interaction</strong>, interpret the simple effects, not the main effects alone.</p>
+<h3 id="112-repeated-measures-within-subjects">11.2 Repeated measures (within-subjects)</h3>
+<p>Use this when the <strong>same participants</strong> were measured <strong>three or more times</strong>.</p>
+<ol>
+<li>In <strong>Repeated Measures (select 3+, in time order)</strong> select the measurement columns <strong>in chronological order</strong> (for example <code>prejudice_pre</code>, <code>prejudice_post</code>, <code>prejudice_followup</code>).</li>
+<li>Choose the test: <strong>Repeated-Measures ANOVA (Parametric)</strong>, <strong>Friedman Test (Non-Parametric)</strong>, or <strong>Both</strong>.</li>
+<li>Press <strong>▶ Run Repeated Measures Test</strong>.</li>
+</ol>
+<p><strong>You get:</strong> the within-subjects <em>F</em> test with <strong>Mauchly's test of sphericity</strong> and the <strong>Greenhouse–Geisser</strong> correction (with a recommendation on when the less conservative Huynh–Feldt correction is appropriate), descriptive statistics per time point, and <strong>Bonferroni-adjusted pairwise comparisons</strong> between time points. The <strong>Friedman</strong> test comes with Wilcoxon-based pairwise follow-ups. For two time points use the <strong>Paired Samples</strong> <em>t</em>-test in Compare Means.</p>
+<blockquote>
+<p><strong>Limitation.</strong> The repeated-measures test analyses one group of participants. To analyse a <em>mixed design</em> (a between-subjects factor × time), run the repeated-measures test separately for each group (use <strong>Remove Cases</strong> in Data Management to keep one group, then <strong>Undo</strong>), or use a latent growth model (Chapter 16).</p>
+</blockquote>
+<hr />
+<h2 id="12-regression">12. Regression</h2>
+<p><em>Module bar: </em><em>Regression</em><em>.</em> Predict an outcome from one or more predictors.</p>
+<h3 id="121-setting-up">12.1 Setting up</h3>
+<ol>
+<li>Choose the <strong>Regression Model Type</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Outcome (Y)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Linear Regression (OLS – Hierarchical &amp; Moderation)</strong></td>
+<td>numeric</td>
+</tr>
+<tr>
+<td><strong>Logistic Regression (Binary Y)</strong></td>
+<td>two categories (0/1)</td>
+</tr>
+<tr>
+<td><strong>Multinomial Logistic Regression</strong></td>
+<td>nominal, 3+ categories</td>
+</tr>
+<tr>
+<td><strong>Ordinal Logistic Regression</strong></td>
+<td>ordered, 3+ categories</td>
+</tr>
+<tr>
+<td><strong>Polynomial Regression (Quadratic)</strong></td>
+<td>numeric; curved relation</td>
+</tr>
+<tr>
+<td><strong>Ridge (L2)</strong> / <strong>Lasso (L1) Regression</strong></td>
+<td>numeric; many or correlated predictors (penalised)</td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li>Select the <strong>Dependent Variable (Y)</strong>.</li>
+<li>Put predictors in the blocks. For <strong>non-OLS</strong> models use <strong>Block 1</strong> for all predictors. For <strong>hierarchical OLS</strong> enter controls in <strong>Block 1</strong>, main predictors in <strong>Block 2</strong>, and additional predictors or <strong>interaction terms</strong> in <strong>Block 3</strong>; the output shows how <em>R</em>² changes at each step. (Create a product term with <strong>Multiply &amp; Create</strong> in Data Management; <strong>centre</strong> the two variables first with <strong>Z-Score</strong> to reduce multicollinearity.)</li>
+<li>Optionally tick <strong>Remove Outliers Before Running (Cook's distance)</strong> and choose the cut-off: <em>4/N (recommended — sensitive)</em>, <em>1.0 (SPSS default — lenient)</em> or <em>0.5 (moderate)</em>.</li>
+<li>Press <strong>▶ Run Regression</strong>.</li>
+</ol>
+<h3 id="122-what-you-get">12.2 What you get</h3>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>📋 Assumptions</strong></td>
+<td>Normality of residuals (Shapiro–Wilk), heteroscedasticity (Breusch–Pagan), independence (Durbin–Watson), <strong>multicollinearity (VIF and tolerance)</strong> and flagged influential cases</td>
+</tr>
+<tr>
+<td><strong>📊 Results</strong></td>
+<td>Descriptives, model summary (<em>R</em>², adjusted <em>R</em>², <em>F</em>), coefficients (<em>B</em>, <em>SE</em>, β, <em>t</em>, <em>p</em>, CI); for logistic models odds ratios, a classification table, McFadden/Nagelkerke pseudo-<em>R</em>² and the Hosmer–Lemeshow test; ordinal models add threshold (cut-point) parameters; Ridge/Lasso show penalised coefficients for standardised predictors; <strong>Reproducible Syntax</strong> (R and Python) at the end</td>
+</tr>
+<tr>
+<td><strong>Obs vs Pred, Residuals, Q-Q Plot, Cook's</strong></td>
+<td>Diagnostic charts</td>
+</tr>
+<tr>
+<td><strong>📈 Diagnostics — ROC</strong></td>
+<td>(Logistic models) ROC curve and AUC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="123-interpreting">12.3 Interpreting</h3>
+<ul>
+<li><em>B</em> is the change in Y per unit change in the predictor, holding the others constant; β is the standardised version, comparable across predictors.</li>
+<li><strong>VIF</strong> above 5 (and especially above 10) signals problematic collinearity.</li>
+<li>If the Q-Q plot or Breusch–Pagan test shows serious violations, consider a transformation, a robust approach, or a different model.</li>
+<li>Report <em>R</em>², the coefficients with confidence intervals, and the sample size. Example: <em>"Pre-test prejudice, contact quality and anxiety jointly explained 56% of the variance in post-test prejudice, R² = .56."</em> (experiment data, see Chapter 25).</li>
+</ul>
+<hr />
+<h2 id="13-mediation-analysis">13. Mediation Analysis</h2>
+<p><em>Module bar: </em><em>Mediation Analysis</em><em>.</em> Test whether the effect of X on Y operates <strong>through</strong> a mediator M (the indirect effect <em>a × b</em>).</p>
+<h3 id="131-setting-up">13.1 Setting up</h3>
+<ol>
+<li><strong>Independent Variable(s) — X:</strong> select one or more (each is analysed in turn). Use a numeric variable; code a two-group variable as 0/1 (for example <code>condition_code</code>).</li>
+<li><strong>Mediator (M)</strong> and <strong>Dependent Variable (Y):</strong> choose from the drop-downs.</li>
+<li><strong>Covariates</strong> (optional) are entered in all equations.</li>
+<li>Set the <strong>Bootstrap Resamples</strong> (5,000 or more recommended for publication) and <strong>Confidence Level</strong> (95%, 90% or 99%).</li>
+<li>Press <strong>▶ Run Mediation Analysis</strong>.</li>
+</ol>
+<h3 id="132-what-you-get">13.2 What you get</h3>
+<ul>
+<li><strong>Path coefficients</strong>: <em>a</em> (X→M), <em>b</em> (M→Y controlling for X), <em>c′</em> (the direct effect) and <em>c</em> (the total effect), each with <em>SE</em>, <em>t</em>, <em>p</em>.</li>
+<li><strong>Variance explained (R²)</strong> for each regression equation (the M equation, the full Y equation and the total-effect equation), with adjusted <em>R</em>², <em>F</em>-test, and <strong>ΔR²</strong> showing what the mediator adds to the outcome model.</li>
+<li>The <strong>indirect effect <em>a × b</em></strong> with a <strong>percentile bootstrap confidence interval</strong> (Preacher &amp; Hayes, 2008) and a <strong>Sobel test</strong> for comparison.</li>
+<li>A <strong>Path Diagram</strong> tab and a <strong>Bootstrap Distributions</strong> tab (the histogram of <em>a × b</em>).</li>
+<li>An <strong>APA-style write-up</strong> sentence and reproducible syntax.</li>
+</ul>
+<h3 id="133-interpreting">13.3 Interpreting</h3>
+<p>The indirect effect is <strong>significant when its bootstrap CI excludes zero</strong>. If the indirect effect is significant and the direct effect <em>c′</em> is not, the pattern is consistent with <strong>full</strong> mediation; if both are significant, <strong>partial</strong> mediation. Remember that mediation is a <em>causal</em> claim: it is only as convincing as your design (random assignment of X, temporal order of M and Y, no omitted confounders). The <strong>Bootstrap</strong> method is preferred over the Sobel test because the distribution of <em>a × b</em> is not normal.</p>
+<hr />
+<h2 id="14-categorical-pca-catpca">14. Categorical PCA (CATPCA)</h2>
+<p><em>Module bar: </em><em>Categorical PCA (CATPCA)</em><em>.</em> A principal-components method that handles <strong>mixed data</strong> (numeric, ordinal and nominal variables) through optimal scaling.</p>
+<ol>
+<li><strong>Select Variables to Reduce (Mixed Data allowed).</strong></li>
+<li>Set the <strong>Number of Components to Extract</strong>.</li>
+<li>Choose <strong>Missing Value Handling</strong>: <em>Drop missing rows (Listwise)</em> or <em>Impute missing as separate category</em>.</li>
+<li>Press <strong>▶ Run CATPCA</strong>.</li>
+</ol>
+<p><strong>You get:</strong> a table of <strong>variable scaling levels</strong>, a <strong>Model Summary</strong> (eigenvalues, variance explained, Cronbach's α per component), component <strong>loadings</strong>, <strong>category quantifications</strong> and a <strong>Biplot</strong>.</p>
+<p>Use CATPCA for exploration and data reduction. If your aim is to identify latent constructs, use EFA/CFA (Chapters 17–18).</p>
+<hr />
+<h2 id="15-cluster--profile-analysis-lca">15. Cluster &amp; Profile Analysis (LCA)</h2>
+<p><em>Module bar: </em><em>Cluster &amp; Profile Analysis (LCA)</em><em>.</em> Find <strong>subgroups of people</strong> who share similar response profiles.</p>
+<ol>
+<li>Select the <strong>Variables (Indicators)</strong> (numeric).</li>
+<li>Choose the <strong>Extraction Method</strong>: <strong>Latent Profile Analysis (Gaussian Mixture)</strong>, <strong>K-Means Clustering</strong> or <strong>Hierarchical Clustering</strong>.</li>
+<li>Set the <strong>Number of Classes/Clusters (k)</strong>.</li>
+<li>Press <strong>▶ Run Latent Profile / Cluster Analysis</strong>.</li>
+</ol>
+<p><strong>You get:</strong> class sizes, <strong>class profiles</strong> (means and SDs on the original scale), a <strong>Profile Plot</strong>, a PCA view of the solution, a one-way ANOVA per indicator showing which variables separate the classes, and for latent profile analysis the <strong>average posterior probabilities</strong> of membership and a <strong>model-fit comparison across <em>k</em></strong> (AIC, BIC, entropy).</p>
+<p><strong>Choosing <em>k</em>.</strong> Run the analysis for several values of <em>k</em> and compare BIC (lower is better), entropy (closer to 1 means cleaner separation; ≥ .80 is commonly desired), the smallest class size (very small classes are rarely meaningful) and, above all, the <strong>interpretability</strong> of the profiles. Standardise indicators on very different scales before clustering (Data Management → <strong>Z-Score</strong>).</p>
+<hr />
+<h2 id="16-forecasting-time-series--latent-growth-curves">16. Forecasting (Time Series) &amp; Latent Growth Curves</h2>
+<p><em>Module bar: </em><em>Forecasting (Time Series)</em><em>.</em> The <strong>Select Model</strong> option switches between two tools.</p>
+<h3 id="161-exponential-smoothing-single-series">16.1 Exponential smoothing (single series)</h3>
+<p>Use it to project a series that was measured regularly over time (for example monthly clinic visits).</p>
+<ol>
+<li>Choose <strong>Exponential Smoothing (Single Series)</strong>.</li>
+<li>Choose the <strong>Time/Date Variable</strong> and the <strong>Target Variable</strong>.</li>
+<li>Set <strong>Periods to Forecast</strong>.</li>
+<li>Press <strong>▶ Run Model</strong>.</li>
+</ol>
+<p><strong>You get:</strong> <strong>Forecast Stats</strong> (AIC, BIC and the estimated smoothing parameters) and a <strong>Forecast Plot</strong> that shows the observed series, the fitted values and the forecast with its uncertainty band. The model is <strong>Holt's linear-trend exponential smoothing</strong>: it captures a level and a trend but <strong>not a seasonal cycle</strong>, so for strongly seasonal data (such as monthly series with yearly peaks) the forecast follows the trend only. Use another tool if seasonality matters. Forecast uncertainty grows with the horizon; treat long-range forecasts cautiously, and remember that statistical forecasts assume the process continues as in the past.</p>
+<h3 id="162-latent-growth-curve-modeling-lgcm">16.2 Latent Growth Curve Modeling (LGCM)</h3>
+<p>Use it to model <strong>individual change</strong> across <strong>three or more waves</strong> of the same measure.</p>
+<ol>
+<li>Choose <strong>Latent Growth Curve Modeling (LGCM)</strong>.</li>
+<li>In <strong>Select Repeated Measures (T1, T2, T3… in order)</strong> select the wave variables in time order.</li>
+<li>Press <strong>▶ Run Model</strong>.</li>
+</ol>
+<p><strong>You get:</strong> the estimated <strong>latent intercept</strong> (average starting level) and <strong>latent slope</strong> (average rate of change) with their variances (do people differ in starting point or in change?) and their covariance, and a <strong>Growth Plot</strong> with the mean trajectory and individual trajectories. <strong>Global fit indices are not reported for growth models in this version</strong> (the fit statistics for models with a mean structure are not reliable); use <code>lavaan::growth()</code> in R if you need them. Growth models need adequate sample size and equally spaced waves; with only three waves a linear growth model is the realistic choice.</p>
+<hr />
+<h2 id="17-exploratory-factor-analysis-efa">17. Exploratory Factor Analysis (EFA)</h2>
+<p><em>Module bar: </em><em>Exploratory (EFA)</em><em>.</em> Discover how many underlying factors a set of items measures and which items belong to which factor.</p>
+<h3 id="171-before-you-start">17.1 Before you start</h3>
+<ul>
+<li>Use items on an interval-like scale (Likert items with 5 or more points are commonly treated this way). <strong>Reverse-score</strong> negatively worded items first (Chapter 5.4).</li>
+<li>You need a reasonable sample: at least about 5–10 participants per item and ideally 200 or more.</li>
+</ul>
+<h3 id="172-running-efa">17.2 Running EFA</h3>
+<ol>
+<li><strong>Select Items for EFA</strong> (items only, not IDs or demographics).</li>
+<li><strong>Number of Factors</strong> – enter 0 to let PsyStat use the Kaiser criterion (eigenvalues &gt; 1), or enter the number you want after examining the scree plot and parallel analysis.</li>
+<li><strong>Extraction method:</strong> <em>minres (MINRES / PAF)</em>, <em>ml (Maximum Likelihood)</em> or <em>principal (PCA)</em>. For factor analysis proper, prefer <strong>minres</strong> or <strong>ml</strong>; PCA is a data-reduction method, not a factor model.</li>
+<li><strong>Rotation:</strong> <em>promax</em>, <em>oblimin</em> (both allow the factors to correlate and are usually the sensible default in psychology), <em>varimax</em> (forces uncorrelated factors) or <em>none</em>.</li>
+<li><strong>Suppress Loadings &lt;</strong> hides small loadings (for example 0.30) so the pattern is easy to read.</li>
+<li>Press <strong>▶ Run EFA</strong>.</li>
+</ol>
+<h3 id="173-what-you-get">17.3 What you get</h3>
+<ul>
+<li><strong>Assumptions &amp; Scree</strong> tab: the <strong>KMO</strong> measure of sampling adequacy and <strong>Bartlett's test of sphericity</strong> (checks that the items are correlated enough to factor), a <strong>scree plot</strong> and <strong>parallel analysis</strong>.</li>
+<li><strong>Matrix &amp; Corr</strong> tab: <em>Total Variance Explained</em>, the <strong>factor loadings and communalities</strong>, <strong>internal consistency</strong> (Cronbach's α and McDonald's ω) per factor, and the <strong>factor correlation matrix</strong> (for oblique rotations).</li>
+<li><strong>Syntax</strong> tab: reproducible R (<code>psych</code>) and Python (<code>factor_analyzer</code>) code.</li>
+</ul>
+<h3 id="174-interpreting">17.4 Interpreting</h3>
+<ul>
+<li><strong>KMO</strong> ≥ .60 is acceptable (≥ .80 good); Bartlett's test should be significant.</li>
+<li>Decide the number of factors using <strong>several</strong> criteria (scree, parallel analysis, interpretability), not the Kaiser rule alone, which tends to over-extract.</li>
+<li>Loadings ≥ .40 are generally meaningful. An item that loads weakly everywhere, or substantially on two factors (<strong>cross-loading</strong>), is a candidate for removal. Re-run the analysis after removing an item.</li>
+<li>Exploratory results should be <strong>confirmed in a new sample</strong> with CFA (Chapter 18); do not run EFA and CFA on the same data and call the CFA a confirmation.</li>
+</ul>
+<hr />
+<h2 id="18-confirmatory-factor-analysis-cfa">18. Confirmatory Factor Analysis (CFA)</h2>
+<p><em>Module bar: </em><em>Confirmatory (CFA)</em><em>.</em> Test a measurement model that you specify in advance.</p>
+<h3 id="181-writing-the-model">18.1 Writing the model</h3>
+<p>Use <strong>lavaan-style syntax</strong> in the model box. <code>=~</code> means "is measured by":</p>
+<pre><code>Anxiety    =~ item1 + item2 + item3
+Depression =~ item4 + item5 + item6
+</code></pre>
+<p>Each latent factor needs at least three indicators for a unique solution (two can work if factors are correlated and other constraints exist). Correlated errors (use sparingly and only with a theoretical reason) are written <code>item1 ~~ item2</code>. Latent factors are allowed to correlate by default. The first indicator of each factor is fixed to 1 to give the factor a scale.</p>
+<h3 id="182-options">18.2 Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Choices</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Estimator</strong></td>
+<td><strong>ML</strong> – Maximum Likelihood (normal-theory SE) · <strong>MLR</strong> – ML with robust (sandwich) SE and scaled χ²</td>
+<td>Use <strong>MLR</strong> when data depart clearly from multivariate normality (skewed or heavy-tailed items). The point estimates are the same as ML; the standard errors are Huber–White sandwich estimates and the test statistic is the Satorra–Bentler scaled χ², with correspondingly scaled CFI, TLI, NFI and RMSEA. MLR uses complete cases only.</td>
+</tr>
+<tr>
+<td><strong>Data metric</strong></td>
+<td><strong>Standardised</strong> – z-scored data (unstandardised = Std.all) · <strong>Raw data</strong> – estimates in the original scale of the instrument</td>
+<td>Choose <em>Raw</em> if you want unstandardised loadings in the units of your items (the first loading of each factor is fixed to 1). Std.lv and Std.all are always reported, computed from the model-implied covariance matrix. Fit statistics are the same in both metrics.</td>
+</tr>
+<tr>
+<td><strong>Missing data method</strong></td>
+<td><strong>Listwise deletion</strong> (default; all fit indices) · <strong>FIML</strong> (uses all rows; global fit indices unavailable)</td>
+<td>With FIML, estimates and standard errors use every observation, but χ², CFI, TLI, RMSEA and SRMR are not computed in this version; run listwise to obtain them. FIML cannot be combined with MLR (MLR then uses listwise deletion).</td>
+</tr>
+<tr>
+<td><strong>My indicators are ordinal (Likert ≤ 5 pts) — show warning</strong></td>
+<td>tick box</td>
+<td>Shows a caution that ML on ordinal items with few categories can distort loadings and fit (see 18.4).</td>
+</tr>
+</tbody>
+</table>
+<p>Press <strong>▶ Run CFA</strong>.</p>
+<h3 id="183-what-you-get">18.3 What you get</h3>
+<ul>
+<li><strong>Model Information</strong> (estimator, data metric, sample size) and the <strong>Analysis Note</strong> stating how missing data were handled.</li>
+<li><strong>Model Fit Indices</strong>: χ² (df, <em>p</em>), CFI, TLI, NFI, GFI, RMSEA, SRMR, AIC and BIC, each with a guideline (CFI/TLI ≥ .95 excellent, ≥ .90 acceptable; RMSEA ≤ .06 excellent, ≤ .08 acceptable; SRMR ≤ .08; Hu &amp; Bentler, 1999). With MLR the scaled versions are shown and labelled.</li>
+<li><strong>Parameter Estimates</strong>: loadings (unstandardised, Std.lv, Std.all), variances and covariances with SE, <em>z</em> and <em>p</em>; the first loading of each factor is fixed and has no SE.</li>
+<li><strong>Construct Reliability and Validity</strong>: Cronbach's α, McDonald's ω, <strong>composite reliability (CR)</strong> and <strong>average variance extracted (AVE)</strong>, with the <strong>Fornell–Larcker</strong> check of discriminant validity (the square root of each construct's AVE should exceed its correlations with other constructs).</li>
+<li><strong>Modification Indices</strong> tab: which fixed parameters (for example a residual covariance) would most improve fit.</li>
+</ul>
+<h3 id="184-interpreting-and-reporting">18.4 Interpreting and reporting</h3>
+<ul>
+<li>Judge fit with <strong>several indices together</strong>. χ² is nearly always significant in large samples and should not be the only criterion.</li>
+<li>Standardised loadings of .50–.70 or higher indicate adequate indicators; AVE ≥ .50 and CR ≥ .70 are common benchmarks (Fornell &amp; Larcker, 1981).</li>
+<li><strong>Modification indices</strong> are data-driven. Adding paths because an index is large capitalises on chance; make only changes you can justify theoretically, and say so in the paper.</li>
+<li><strong>Ordinal data.</strong> Likert items with five or fewer categories are, strictly, ordinal. ML (and MLR) treat them as continuous, which works acceptably with five or more categories and moderate skew, but underestimates loadings otherwise. Dedicated ordinal estimators (WLSMV with polychoric correlations) are not available in PsyStat; use R's <code>lavaan</code> for those.</li>
+<li><strong>Reporting example.</strong> <em>"The four-factor model fitted the data well, χ²(84) = 84.0, p = .48, CFI = 1.00, TLI = 1.00, RMSEA = .002, SRMR = .04."</em> (example survey data; see Chapter 25).</li>
+</ul>
+<hr />
+<h2 id="19-structural-equation-modeling-sem">19. Structural Equation Modeling (SEM)</h2>
+<p><em>Module bar: </em><em>SEM (Graph &amp; Syntax)</em><em>.</em> Combine measurement models with <strong>structural paths</strong> between latent and observed variables.</p>
+<h3 id="191-two-ways-to-specify-the-model">19.1 Two ways to specify the model</h3>
+<p><strong>A. Interactive Builder</strong> (tab <em>Interactive Builder</em>): draw the model on a canvas.</p>
+<ul>
+<li><strong>✚ Add Latent</strong> adds a latent (circle) variable; <strong>✚ Add Observed</strong> adds an observed (rectangle) variable.</li>
+<li><strong>➚ Draw Path</strong> connects two variables with a regression path or loading (click the source, then the target); <strong>↔ Covariance</strong> adds a covariance; <strong>✖ Delete</strong> removes an element.</li>
+<li><strong>Generate Syntax ↓</strong> converts the drawing into syntax in the <em>Syntax &amp; Results</em> tab.</li>
+</ul>
+<p><strong>B. Syntax</strong> (tab <em>Syntax &amp; Results</em>): write lavaan-style syntax directly:</p>
+<pre><code># measurement part
+SI =~ si1 + si2 + si3 + si4 + si5
+IC =~ ic1 + ic2 + ic3 + ic4
+PR =~ pr1 + pr2 + pr3
+# structural part
+PR ~ IC + SI
+</code></pre>
+<p><strong>Load Example</strong> inserts a ready-made model.</p>
+<h3 id="192-running">19.2 Running</h3>
+<p>Choose the <strong>Missing data method</strong>: <strong>Listwise deletion</strong> (default) or <strong>FIML</strong> (uses all rows; global fit indices are not reported under FIML), tick the <strong>ordinal indicators warning</strong> if relevant, and press <strong>▶ Estimate Structural Model</strong>.</p>
+<h3 id="193-output">19.3 Output</h3>
+<p>The <strong>SEM Results</strong> tab has the same sections as CFA (model information, fit indices, parameter estimates with Std.lv/Std.all), including the <strong>structural regressions</strong> (paths) with standardised coefficients. See 18.3 and 18.4 for interpretation.</p>
+<h3 id="194-good-practice">19.4 Good practice</h3>
+<p>Specify the model from theory <em>before</em> looking at the data; check the measurement model with CFA first; avoid adding many paths to improve fit; and report the full model with all fit indices. A well-fitting model is <em>consistent with</em> your theory but does not prove it, because equivalent models can fit equally well. Variables are z-scored before fitting, so unstandardised estimates equal Std.all in this module.</p>
+<hr />
+<h2 id="20-network-analysis">20. Network Analysis</h2>
+<p><em>Module bar: </em><em>Network Analysis</em><em>.</em> Map the relationships among symptoms, items or traits as a <strong>network</strong>: variables are <em>nodes</em> and (partial) correlations are <em>edges</em>.</p>
+<h3 id="201-choosing-variables-and-method">20.1 Choosing variables and method</h3>
+<ol>
+<li><strong>Select Variables for Network</strong> (numeric; typically 5–40 items or scores). <strong>Do not include a total score together with the items it is built from</strong>: the total is perfectly predictable from its items, which makes partial correlations undefined (the app stops with an explanation for the partial-correlation methods and warns for EBICglasso).</li>
+<li><strong>Estimation method:</strong>
+   * <strong>EBICglasso (recommended)</strong> – regularised partial correlations (graphical lasso; the model is selected with the Extended BIC, γ = 0.5 by default; Friedman et al., 2008; Foygel &amp; Drton, 2010; Epskamp &amp; Fried, 2018). Produces sparse, interpretable networks. Needs <strong>scikit-learn</strong>.
+   * <strong>Partial correlations – significant edges</strong> – unregularised partial correlations keeping an edge only if its <strong>adjusted</strong> <em>p</em>-value is below α. Choose <strong>Bonferroni</strong>, <strong>Holm</strong> or <strong>Benjamini–Hochberg (FDR)</strong> correction.
+   * <strong>Partial correlations – unregularised</strong> – all partial correlations filtered only by the minimum edge weight.
+   * <strong>Correlation network (zero-order)</strong> – raw correlations; useful for comparison, but dense.</li>
+<li><strong>Correlation type:</strong> <strong>Pearson</strong>, <strong>Spearman (rank-based)</strong> or <strong>Nonparanormal (normal scores)</strong>. Use Spearman or Nonparanormal for skewed or ordinal (Likert) data.</li>
+<li><strong>Minimum |edge weight| to display</strong> hides weak edges (defaults: 0 for EBICglasso and significance-tested networks; 0.15 for unregularised partial correlations; 0.30 for the correlation network).</li>
+<li>Optionally tick <strong>Bootstrap accuracy &amp; stability analysis</strong> and set the number of bootstrap samples.</li>
+<li>Choose the <strong>Graph Layout</strong> (spring/Fruchterman–Reingold, Kamada–Kawai, circular).</li>
+</ol>
+<h3 id="202-appearance-controls">20.2 Appearance controls</h3>
+<ul>
+<li><strong>Node colours:</strong> <em>Auto – detected communities</em> colours the nodes by community found with the greedy modularity algorithm. <em>Custom – my own subscales</em> lets you assign variables to <strong>named subscales or constructs</strong> (button <strong>Define Subscales &amp; Colours…</strong>), and pick a colour for each. Variables that you leave out are grey ("Unassigned").</li>
+<li><strong>Positive / negative edge colour</strong> (default green / red) and <strong>Draw negative edges dashed</strong> (so that sign remains visible in black-and-white print).</li>
+<li><strong>Node label font size</strong>, <strong>Node label colour</strong> (<em>Auto, Black, White</em>) and <strong>Node size</strong> (30–250 %).</li>
+<li><strong>Reset colours to default</strong> restores the defaults.</li>
+</ul>
+<h3 id="203-what-you-get">20.3 What you get</h3>
+<ul>
+<li><strong>Network Metrics:</strong> the estimator, correlation type, <em>N</em>, number of edges and sparsity; node <strong>strength</strong>, <strong>expected influence</strong> (signed), <strong>degree</strong>, <strong>betweenness</strong> and <strong>closeness</strong> (weighted); the <strong>edge-weight list</strong>, and a caution if variables are (nearly) collinear.</li>
+<li><strong>Network Plot:</strong> green solid lines are <strong>positive</strong> and red dashed lines <strong>negative</strong> relations. <strong>Line width and opacity grow with the absolute weight</strong> (relative to the strongest edge). Node colour shows the community or subscale, and a legend explains everything.</li>
+<li><strong>Move nodes</strong> by dragging them with the mouse.</li>
+<li>For large networks the plot <strong>scrolls</strong> (mouse wheel for vertical, <strong>Shift + wheel</strong> for horizontal, <strong>Ctrl + wheel</strong> to zoom); use the <strong>− / + / Fit</strong> buttons to zoom.</li>
+<li><strong>⤢ Open in Window</strong> shows the network in a separate resizable window.</li>
+<li><strong>💾 Save 300 DPI</strong> saves a PNG or TIFF at 300 DPI, or a vector SVG/PDF.</li>
+<li><strong>Centrality Charts</strong> and <strong>Bridge Analysis</strong> (which nodes connect communities).</li>
+<li>If bootstrapping was selected: <strong>Bootstrap Summary</strong> (centrality <strong>CS-coefficients</strong> and edge-weight confidence intervals) and <strong>Stability Plots</strong>.</li>
+</ul>
+<h3 id="204-interpreting">20.4 Interpreting</h3>
+<ul>
+<li>An edge is the association between two variables <strong>after controlling for all the others</strong>. It is not evidence of causation or its direction.</li>
+<li><strong>Centrality</strong> identifies nodes that are strongly connected, but centrality indices can be unstable. Interpret them only if the bootstrap shows adequate stability: the <strong>CS-coefficient should be above 0.25 and preferably above 0.50</strong> (Epskamp, Borsboom &amp; Fried, 2018).</li>
+<li>For regularised estimates the bootstrap intervals describe the <strong>accuracy</strong> of edge weights; they are not significance tests, and an interval that includes zero does not mean that the edge is absent.</li>
+<li>The bootstrap for EBICglasso fits each resample on a narrow window of tuning values around the original solution to save time; this is a documented approximation. Bootstrapping with many variables can take several minutes. A <strong>Cancel</strong> button is provided.</li>
+<li>Networks from small samples are unreliable. As a rough guide you want considerably more participants than the number of edges you hope to estimate, and you should report the sample size and sparsity.</li>
+</ul>
+<hr />
+<h2 id="21-power-analysis">21. Power Analysis</h2>
+<p><em>Module bar: </em><em>Power Analysis</em><em>.</em> Plan sample size (or judge a finished study) in the style of G*Power.</p>
+<h3 id="211-choosing-a-design">21.1 Choosing a design</h3>
+<p>PsyStat covers ten designs: <strong>Independent Samples <em>t</em>-test</strong>, <strong>Paired Samples <em>t</em>-test</strong>, <strong>One-Way ANOVA</strong>, <strong>Two-Way / Factorial ANOVA</strong> (main effects of Factor A or B, or the A × B interaction), <strong>Multiple Regression – Omnibus <em>R</em>²</strong>, <strong>Multiple Regression – <em>R</em>² Increase / Interaction</strong>, <strong>Logistic Regression</strong> (continuous predictor, binary outcome), <strong>Pearson Correlation</strong>, <strong>Chi-Square test</strong>, and <strong>Mediation</strong> (indirect effect; see the note in the module).</p>
+<h3 id="212-three-modes">21.2 Three modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Question</th>
+<th>You supply</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A Priori — Required N</strong></td>
+<td><em>How many participants do I need?</em></td>
+<td>Effect size, α, target power (1 − β)</td>
+<td>Required N</td>
+</tr>
+<tr>
+<td><strong>Post-Hoc — Achieved Power</strong></td>
+<td><em>What power did my study have?</em></td>
+<td>Effect size, α, the N you have</td>
+<td>Achieved power</td>
+</tr>
+<tr>
+<td><strong>Sensitivity — Min Detectable Effect</strong></td>
+<td><em>What is the smallest effect I could detect?</em></td>
+<td>N, α, target power</td>
+<td>Minimum detectable effect</td>
+</tr>
+</tbody>
+</table>
+<p>Choose <strong>Two-tailed</strong> or <strong>One-tailed</strong> (a one-tailed test needs a strong prior reason). Enter the design-specific inputs (number of groups, number of predictors, etc.), then press <strong>▶ Calculate Power</strong>.</p>
+<h3 id="213-output">21.3 Output</h3>
+<p>A <strong>Power Calculation</strong> tab (a G<em>Power-style summary of inputs and results, plus Cohen's 1988 conventions for small/medium/large effects) and a </em><em>Power Curve</em>* tab showing power as a function of sample size.</p>
+<h3 id="214-good-practice">21.4 Good practice</h3>
+<ul>
+<li>Base the <strong>effect size on prior literature or the smallest effect of practical interest</strong>, not on a guess of "medium". Effect sizes from small pilot studies are noisy and usually too large.</li>
+<li><strong>Be careful with Post-Hoc mode.</strong> "Observed power" computed from a completed study's own result only restates its <em>p</em>-value and is not informative. Use Post-Hoc with an effect size taken from the <em>literature</em> (or the smallest effect of interest), or use the sensitivity mode.</li>
+<li>Aim for at least 80 % power; many journals now expect 90 % for confirmatory work.</li>
+<li>Plan for <strong>attrition</strong> and exclusions by recruiting more than the computed N.</li>
+</ul>
+<hr />
+<h2 id="22-bayesian-analysis">22. Bayesian Analysis</h2>
+<p><em>Module bar: </em><em>Bayesian Analysis</em><em>.</em> Quantify evidence <strong>for and against</strong> a hypothesis, including evidence for the <em>null</em>. Reporting follows APA 7 and the guidelines of van Doorn et al. (2021).</p>
+<h3 id="221-analyses-available">22.1 Analyses available</h3>
+<p><em>Independent-samples t-test</em>, <em>Paired t-test</em>, <em>Pearson correlation</em>, <em>Linear regression</em>, <em>ANOVA</em> and <em>Mediation</em>. Select the analysis type, then the variables (drag them from the <em>Available Variables</em> list or use the lists), and press the run button.</p>
+<h3 id="222-priors">22.2 Priors</h3>
+<ul>
+<li><strong>Cauchy scale <em>r</em></strong> (t-tests): the prior on the standardised effect size δ is Cauchy(0, <em>r</em>). The default <strong>r = 0.707</strong> is the JASP/BayesFactor default ("medium" prior). Smaller values assume smaller effects; larger values (for example 1.0) assume larger effects.</li>
+<li><strong>Stretched-beta width κ</strong> (correlation): the prior on ρ is a stretched Beta(1/κ, 1/κ) on (−1, 1) (Ly, Verhagen &amp; Wagenmakers, 2016). <strong>κ = 1</strong> is the uniform prior (JASP default).</li>
+<li>Regression and ANOVA Bayes factors use the <strong>BIC approximation</strong> (a unit-information prior; Raftery, 1995; Wagenmakers, 2007).</li>
+<li><strong>Mediation</strong> uses a <strong>Bayesian bootstrap</strong> (Rubin, 1981): a posterior under a non-informative prior, with no Bayes factor.</li>
+</ul>
+<p>Always check how sensitive the conclusion is to the prior by re-running with a different <em>r</em> or κ, and report that.</p>
+<h3 id="223-what-the-tables-show">22.3 What the tables show</h3>
+<p>Each analysis shows <strong>two tables</strong>:</p>
+<ol>
+<li><strong>Descriptive &amp; Frequentist Reference</strong> – sample statistics, the frequentist <em>t</em>, <em>p</em>-value, confidence interval and effect size. These are marked with an asterisk and <strong>are shown for comparison only</strong>; they play no role in the Bayesian inference.</li>
+<li><strong>Bayesian Inference</strong> – the <strong>prior</strong>; the <strong>posterior median and mean</strong> of the effect (δ or ρ); the <strong>95% credible interval (CrI, highest-density)</strong>; <strong>BF₁₀</strong>, <strong>BF₀₁ = 1/BF₁₀</strong> and an evidence label.</li>
+</ol>
+<p>Beneath the table a <strong>note</strong> gives the prior, the method, a plain-language statement ("The data are 5.1 times more likely under H₀ than under H₁") and, for correlations, a suggested reporting sentence.</p>
+<h3 id="224-reading-bayes-factors">22.4 Reading Bayes factors</h3>
+<table>
+<thead>
+<tr>
+<th>BF₁₀</th>
+<th>Evidence for H₁</th>
+<th></th>
+<th>BF₁₀</th>
+<th>Evidence for H₀ (use BF₀₁)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–3</td>
+<td>Anecdotal</td>
+<td></td>
+<td>1/3–1</td>
+<td>Anecdotal / inconclusive</td>
+</tr>
+<tr>
+<td>3–10</td>
+<td>Moderate</td>
+<td></td>
+<td>1/10–1/3</td>
+<td>Moderate</td>
+</tr>
+<tr>
+<td>10–30</td>
+<td>Strong</td>
+<td></td>
+<td>1/30–1/10</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>30–100</td>
+<td>Very strong</td>
+<td></td>
+<td>1/100–1/30</td>
+<td>Very strong</td>
+</tr>
+<tr>
+<td>&gt; 100</td>
+<td>Decisive</td>
+<td></td>
+<td>&lt; 1/100</td>
+<td>Decisive</td>
+</tr>
+</tbody>
+</table>
+<p>(Jeffreys, 1961; Kass &amp; Raftery, 1995.) A BF near 1 means the data do not discriminate between the hypotheses; this is <strong>not</strong> evidence for either. A credible interval is read directly: <em>given the prior and the data, there is a 95% probability that the effect lies in this interval.</em></p>
+<h3 id="225-reporting-example-illustrative-values">22.5 Reporting example (illustrative values)</h3>
+<p><em>"A Bayesian independent-samples t-test with a default Cauchy prior (r = 0.707) provided moderate evidence for the null hypothesis of no group difference, BF₀₁ = 5.09 (BF₁₀ = 0.197); the posterior median of δ was −0.03, 95% CrI [−0.36, 0.32]. A prior sensitivity check with r = 1.0 gave BF₀₁ = 7.00."</em></p>
+<hr />
+<h2 id="23-exporting-saving-and-settings">23. Exporting, saving and settings</h2>
+<h3 id="231-exporting-results">23.1 Exporting results</h3>
+<p>Every results panel has a <strong>💾 Export to HTML/Word</strong> button. It saves the <strong>currently displayed tab</strong> as:</p>
+<ul>
+<li><strong>.html</strong> – opens in any browser and can be pasted into Word or Google Docs with the formatting intact; or</li>
+<li><strong>.doc</strong> – a Word-compatible file (HTML-based), which opens directly in Microsoft Word, LibreOffice and Pages.</li>
+</ul>
+<p>Tables keep their APA styling. Charts are exported as image files with <strong>Save 300 DPI</strong> (a button in the chart window).</p>
+<h3 id="232-apa-mode">23.2 APA Mode</h3>
+<p>At the top right of the window the <strong>Exploratory Mode / APA Mode</strong> switch controls the look of result tables.</p>
+<ul>
+<li><strong>Exploratory Mode</strong> (default): colour highlights and badges make the results quick to scan.</li>
+<li><strong>APA Mode</strong>: black-and-white, journal-style tables (Times New Roman, only <em>p</em>-values in bold, no colour). Use it when you want to paste tables straight into a manuscript.</li>
+</ul>
+<h3 id="233-decimal-places">23.3 Decimal places</h3>
+<p><strong>Settings → Decimal Formatting</strong> sets 2, 3 or 4 decimals for all tables. APA recommends two decimals for most statistics and three for <em>p</em>-values; <em>p</em> is shown without a leading zero (<em>p</em> = .032, <em>p</em> &lt; .001).</p>
+<h3 id="234-light-and-dark-mode">23.4 Light and dark mode</h3>
+<p><strong>Settings → Toggle Light/Dark Mode</strong>.</p>
+<hr />
+<h2 id="24-autosave-and-crash-recovery">24. Autosave and crash recovery</h2>
+<p>PsyStat saves a copy of your dataset in the background <strong>every two minutes</strong> into a <strong>private folder in your operating system's temporary directory</strong>; nothing is uploaded anywhere. If the program closes unexpectedly (a crash, a power cut), the next time you start PsyStat it offers to <strong>recover your last session</strong>.</p>
+<ul>
+<li>Autosave is a safety net, <strong>not a substitute for saving</strong>. Use <strong>File → Save Dataset As…</strong> regularly.</li>
+<li>If autosave fails (for example because the disk is full), PsyStat shows a <strong>warning dialog</strong> and a status-bar message. Free up disk space and save your data manually.</li>
+<li><strong>Shared computers (labs).</strong> Each user account has its own autosave folder. Autosave files are removed when you close the program normally, but <strong>after a crash they remain</strong> until you recover or discard them. If you used a shared or generic account for sensitive data, discard the recovery offer on the next start and delete your dataset files when you are finished.</li>
+</ul>
+<hr />
+<h2 id="25-tutorials-with-the-example-datasets">25. Tutorials with the example datasets</h2>
+<p>PsyStat ships with <strong>four simulated datasets</strong> (File → Load Sample Data). They contain no real participants. The tutorials below walk through every module and tell you what to expect. A full description of every variable is in the <strong>Examples Guide</strong> (Help → Example Datasets Guide).</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Description</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Experiment Example (N = 300)</strong></td>
+<td>Contact vs Control experiment with pre-test, post-test and follow-up</td>
+<td>Tutorials A1–A10</td>
+</tr>
+<tr>
+<td><strong>Survey Example (N = 250)</strong></td>
+<td>15 Likert items, 4 constructs</td>
+<td>Tutorials B1–B7</td>
+</tr>
+<tr>
+<td><strong>CVI Example</strong></td>
+<td>12 items rated by 6 experts</td>
+<td>Tutorial C1</td>
+</tr>
+<tr>
+<td><strong>Time Series Example</strong></td>
+<td>60 months of counselling visits</td>
+<td>Tutorial C2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-experiment-dataset-file--load-sample-data--experiment-example">A. Experiment dataset (File → Load Sample Data → Experiment Example)</h3>
+<p><strong>A1. Descriptives.</strong> <em>Descriptives &amp; Crosstabs</em> → select <code>prejudice_pre</code>, <code>prejudice_post</code>, <code>contact_quality_post</code> → <strong>Generate Descriptives</strong> → <strong>Run</strong>. Check that the means are about 4.0, 4.0 and 4.5 and that <code>contact_quality_post</code> has two missing values per hundred cases (about 2%).</p>
+<p><strong>A2. Independent-samples t-test.</strong> <em>Compare Means</em> → <strong>Independent Samples</strong>, <em>Parametric</em> → Dependent = <code>contact_quality_post</code>, Grouping = <code>condition</code> → <strong>Run Comparison</strong>.
+<em>Expect:</em> Contact M = 5.06, SD = 0.84 (<em>n</em> = 147); Control M = 3.93, SD = 0.95 (<em>n</em> = 150); <em>t</em>(295) = 10.93, <em>p</em> &lt; .001, Cohen's <em>d</em> = 1.27 (a very large effect). Levene's test is not significant (<em>p</em> = .207), so the classic Student <em>t</em>-test is used.</p>
+<p><strong>A3. Paired-samples t-test, and why subgroups matter.</strong> <em>Compare Means</em> → <strong>Paired Samples</strong> → <code>prejudice_pre</code> vs <code>prejudice_post</code> for <strong>all</strong> participants: <em>t</em> ≈ 1.03, <em>p</em> = .31, <em>d</em> ≈ 0.06 — no overall change. The two conditions pull in opposite directions, so the average hides the effect. Now go to <em>Data Management</em>, <strong>Remove Cases</strong> where <code>condition == Control</code>, and repeat: for the Contact group, <em>t</em>(149) ≈ 3.07, <em>p</em> = .003 (prejudice fell from about 3.96 to 3.78). Press <strong>↩ Undo</strong> to restore the removed rows.</p>
+<p><strong>A4. One-way ANOVA.</strong> <em>Analysis of Variance</em> → Dependent = <code>cooperation_post</code>, Fixed Factor = <code>condition</code> → <strong>Run</strong>. <em>Expect:</em> <em>F</em>(1, 290) = 24.2, <em>p</em> &lt; .001, partial η² ≈ .08 (Contact cooperated more). Then use <code>age</code> as the dependent variable and <code>gender</code> (three groups) as the factor to see a <strong>null result</strong> with post-hoc tests: <em>F</em> = 0.24, <em>p</em> = .79.</p>
+<p><strong>A5. ANCOVA.</strong> Dependent = <code>prejudice_post</code>, Fixed Factor = <code>condition</code>, <strong>Covariate</strong> = <code>prejudice_pre</code>. <em>Expect:</em> the effect of condition remains significant after adjusting for pre-test prejudice, <em>F</em>(1, 297) ≈ 21.6, <em>p</em> &lt; .001, and the pre-test is a very strong covariate (<em>F</em> ≈ 199).</p>
+<p><strong>A6. Repeated-measures ANOVA.</strong> First keep only the Contact group (A3). <em>Analysis of Variance</em> → <strong>Repeated Measures</strong> → select <code>prejudice_pre</code>, <code>prejudice_post</code>, <code>prejudice_followup</code> in this order → <strong>Repeated-Measures ANOVA</strong> → <strong>Run</strong>.
+<em>Expect:</em> <em>F</em>(2, 286) ≈ 22.2, <em>p</em> &lt; .001; Mauchly's <em>W</em> = .86 (<em>p</em> &lt; .001, so sphericity is <strong>violated</strong>) and Greenhouse–Geisser ε = .87 (the corrected <em>p</em> is still &lt; .001). Means: 3.96 → 3.78 → 4.13: prejudice drops after contact and then <strong>rebounds</strong> at follow-up. (<em>N</em> = 144 participants with complete data at all three times.)</p>
+<p><strong>A7. Hierarchical regression.</strong> <em>Regression</em> → <strong>Linear Regression (OLS)</strong>, Dependent = <code>prejudice_post</code>, <strong>Block 1</strong> = <code>prejudice_pre</code>, <strong>Block 2</strong> = <code>contact_quality_post</code> and <code>intergroup_anxiety_post</code> → <strong>Run Regression</strong>.
+<em>Expect:</em> Block 1 <em>R</em>² = .396; adding Block 2 gives <em>R</em>² = .563, Δ<em>R</em>² = .167, <em>F</em> change(2, 289) = 55.4, <em>p</em> &lt; .001. The largest VIF is 1.30, so there is no collinearity problem.</p>
+<p><strong>A8. Mediation.</strong> <em>Mediation Analysis</em> → X = <code>condition_code</code>, M = <code>contact_quality_post</code>, Y = <code>prejudice_post</code> → <strong>Run</strong> with at least 2,000 bootstrap resamples.
+<em>Expect:</em> <em>a</em> = 1.14 (<em>p</em> &lt; .001); <em>b</em> = −0.36 (<em>p</em> &lt; .001); total effect <em>c</em> = −0.37 (<em>p</em> &lt; .001); direct effect <em>c′</em> = 0.04 (<em>p</em> = .71); <strong>indirect effect <em>a × b</em> ≈ −0.41 with a bootstrap CI that excludes zero</strong>. The pattern is consistent with <em>full mediation</em>: contact reduces prejudice by improving the quality of contact. (The experiment was randomised, which supports the causal reading of X→M; the M→Y link is not randomised.)</p>
+<p><strong>A9. Moderation chart.</strong> <em>Data Visualization</em> → <strong>Moderation Chart</strong> → X = <code>contact_quality_post</code>, Y = <code>prejudice_post</code>, Moderator = <code>group_identification_pre</code> → <strong>Generate Graph</strong>. <em>Expect:</em> the negative slope of contact quality on prejudice is steeper for participants with high group identification (the interaction coefficient is about −0.10, <em>p</em> = .012; simple slopes ≈ −0.18 at −1 SD and ≈ −0.35 at +1 SD).</p>
+<p><strong>A9b. Correlation.</strong> <em>Correlation</em> → select the <code>…_pre</code> variables (<code>prejudice_pre</code>, <code>contact_quality_pre</code>, <code>intergroup_anxiety_pre</code>, <code>cooperation_pre</code>, <code>group_identification_pre</code>) → <strong>Pearson</strong>, listwise. <em>Expect:</em> prejudice and anxiety correlate positively (<em>r</em> = .45), prejudice and prior contact quality negatively (<em>r</em> = −.31).</p>
+<p><strong>A10. Latent profiles and growth.</strong> <em>Cluster &amp; Profile Analysis</em> → select the four post-test variables → <strong>Latent Profile Analysis</strong>, <em>k</em> = 2 → <strong>Run</strong>: two classes (about 47% / 53%) with different profiles. <em>Forecasting</em> → <strong>Latent Growth Curve Modeling</strong> → select <code>prejudice_pre</code>, <code>prejudice_post</code>, <code>prejudice_followup</code> → <strong>Run Model</strong> to see the average intercept and slope and the individual trajectories. (Fit indices are not reported for growth models in this version.)</p>
+<h3 id="b-survey-dataset-file--load-sample-data--survey-example">B. Survey dataset (File → Load Sample Data → Survey Example)</h3>
+<p><strong>B1. Reverse-score first.</strong> Item <code>si5</code> is reverse-worded. <em>Data Management</em> → <strong>Reverse-Score Variables</strong> → select <code>si5</code>, Min = 1, Max = 5 → <strong>Reverse Selected</strong> (keep <em>Create as new variable</em> ticked and use the new <code>si5</code> name, or overwrite).</p>
+<p><strong>B2. Reliability.</strong> <em>Item Analysis &amp; CVI</em> → select <code>si1</code>–<code>si5</code> → <strong>Run Item Analysis</strong>. <em>Expect:</em> α ≈ .75 for Social Identity with <code>si5</code> reverse-scored. Re-run <strong>without</strong> reversing <code>si5</code> to see the damage: α drops to about .40, and <code>si5</code> has a negative item-rest correlation. Repeat for the other scales: Intergroup Contact (<code>ic1</code>–<code>ic4</code>) α ≈ .80, Prejudice (<code>pr1</code>–<code>pr3</code>) α ≈ .74, Wellbeing (<code>wb1</code>–<code>wb3</code>) α ≈ .67 (acceptable but modest).</p>
+<p><strong>B3. Exploratory factor analysis.</strong> <em>Exploratory (EFA)</em> → select all 15 items → Number of Factors = 4 (or 0 for the Kaiser rule), <strong>minres</strong>, <strong>oblimin</strong> → <strong>Run EFA</strong>. <em>Expect:</em> KMO = .77, Bartlett's test significant (χ²(105) ≈ 801, <em>p</em> &lt; .001), four eigenvalues above 1 (3.48, 2.56, 1.57, 1.31), and a clean four-factor pattern that matches the intended scales.</p>
+<p><strong>B4. Confirmatory factor analysis.</strong> <em>Confirmatory (CFA)</em> → enter the model:</p>
+<pre><code>SI =~ si1 + si2 + si3 + si4 + si5
+IC =~ ic1 + ic2 + ic3 + ic4
+PR =~ pr1 + pr2 + pr3
+WB =~ wb1 + wb2 + wb3
+</code></pre>
+<p>→ <strong>ML</strong>, <em>Standardised</em>, <strong>Listwise</strong> → <strong>Run CFA</strong>. <em>Expect</em> (<em>N</em> = 207 complete cases): χ²(84) = 84.04, <em>p</em> = .48; CFI = 1.00, TLI = 1.00, RMSEA = .002, SRMR = .043. (Fit this good is typical of data simulated from exactly this model; real data rarely fit this well.) Then try <strong>FIML</strong>: the model now uses all 250 participants, but no global fit indices are shown. Try <strong>MLR</strong> and <strong>Raw data</strong> and compare the standard errors and the unstandardised loadings.
+Note the warning that 17% of rows are lost under listwise deletion: with 15 items and about 1% missing per item, many participants miss at least one response. This is why FIML is useful.</p>
+<p><strong>B5. SEM.</strong> <em>SEM (Graph &amp; Syntax)</em> → <em>Syntax &amp; Results</em>:</p>
+<pre><code>SI =~ si1 + si2 + si3 + si4 + si5
+IC =~ ic1 + ic2 + ic3 + ic4
+PR =~ pr1 + pr2 + pr3
+WB =~ wb1 + wb2 + wb3
+PR ~ IC + SI
+WB ~ IC + PR
+</code></pre>
+<p>→ <strong>Estimate Structural Model</strong>. <em>Expect</em> (standardised paths, <em>N</em> = 207): intergroup contact predicts <strong>lower prejudice</strong> (β ≈ −.49, <em>p</em> &lt; .001); social identity predicts slightly <strong>higher</strong> prejudice (β ≈ .25, <em>p</em> ≈ .01); intergroup contact predicts higher wellbeing (β ≈ .24, <em>p</em> ≈ .02); prejudice predicts lower wellbeing, a weaker effect that is right at the border of significance (β ≈ −.21, <em>p</em> ≈ .05). It is a useful reminder that a path near <em>p</em> = .05 should be reported with its confidence interval and interpreted cautiously.</p>
+<p><strong>B6. Network.</strong> <em>Network Analysis</em> → select all 15 items → <strong>EBICglasso</strong>, <strong>Spearman</strong> → <strong>Run</strong>. <em>Expect:</em> about 31 of 105 possible edges (30%) and <strong>four communities</strong> (Q ≈ .64) that match the four scales. Try <strong>Define Subscales &amp; Colours…</strong> to colour nodes by your own scales and <strong>Save 300 DPI</strong> for a figure. Tick <strong>Bootstrap</strong> (100 samples) and read the <strong>CS-coefficients</strong>.</p>
+<p><strong>B7. Bayesian correlation and CATPCA.</strong> First compute scale scores: <em>Data Management</em> → select <code>si1</code>–<code>si5</code> → name <code>SI_mean</code> → <strong>Mean</strong> (and likewise <code>IC_mean</code>, <code>PR_mean</code>, <code>WB_mean</code>; remember that <code>si5</code> must be reverse-scored first). Then <em>Bayesian Analysis</em> → <strong>Pearson correlation</strong>. For <code>SI_mean</code> and <code>WB_mean</code> (sample <em>r</em> ≈ .05) you should find <strong>evidence for the null</strong>: BF₀₁ ≈ 9.4 (BF₁₀ ≈ 0.11), moderate evidence that the two are unrelated. For <code>IC_mean</code> and <code>PR_mean</code> (sample <em>r</em> ≈ −.33) the evidence for a relation is overwhelming (BF₁₀ above 100,000). Change the stretched-beta width κ to see how the Bayes factor responds to the prior. <em>Categorical PCA</em> → select the 15 items, 3 components, to view the component structure and biplot.</p>
+<h3 id="c-bonus-datasets">C. Bonus datasets</h3>
+<p><strong>C1. Content validity.</strong> <em>Item Analysis &amp; CVI</em> → CVI tool → select <code>expert1</code>–<code>expert6</code>, set the threshold to <strong>2.5</strong> → <strong>Calculate I-CVI</strong>. <em>Expect:</em> items 1–6, 8 and 9 reach I-CVI = 1.00 and item 7 reaches .83 (all acceptable with six experts, where I-CVI ≥ .78 is the usual benchmark); items 10, 11 and 12 have I-CVI of .33, .50 and .33 and should be revised or dropped. S-CVI/Ave = .83 (below the .90 benchmark, because of those three items); S-CVI/UA = .67.</p>
+<p><strong>C2. Forecasting.</strong> <em>Forecasting</em> → <strong>Exponential Smoothing</strong> → Time = <code>month</code>, Target = <code>counselling_visits</code>, Periods = 12 → <strong>Run Model</strong>. The series rises with a yearly cycle; the fitted model is Holt's linear trend and does <strong>not</strong> model the seasonal cycle, so examine the plot: the forecast follows the trend but not the seasonal peaks, a typical lesson in why seasonality should be modelled when it is strong.</p>
+<p><strong>C3. Power.</strong> <em>Power Analysis</em> → <strong>Independent Samples t-test</strong>, <strong>A Priori</strong>, two-tailed, <em>d</em> = 0.5, α = .05, power = .80 → <em>Expect</em> <strong>64 participants per group (128 in total)</strong>. Change <em>d</em> to 0.3 to see how quickly the required sample grows (176 per group, 352 in total).</p>
+<hr />
+<h2 id="26-troubleshooting--faq">26. Troubleshooting &amp; FAQ</h2>
+<p><strong>The app does not start / the window never appears.</strong>
+Wait up to 30 seconds on the first start. On Windows, make sure you clicked <em>More info → Run anyway</em> in SmartScreen; on macOS, use <em>right-click → Open</em> the first time. If you run from source, check that Python is 3.11 or 3.12 and that <code>pip install -r requirements.txt</code> finished without errors.</p>
+<p><strong>"Missing dependency: please run pip install …" (running from source).</strong>
+Install the named package in the same Python environment you use to start PsyStat (<code>pip install &lt;name&gt;</code>), then restart. Packaged downloads already include every dependency.</p>
+<p><strong>My CSV opens with all variables in one column / strange characters.</strong>
+The file may use semicolons or a different encoding. Open it in Excel and save it as <em>CSV UTF-8</em>, or re-export from your source program.</p>
+<p><strong>A numeric variable is treated as text.</strong>
+It probably contains a non-numeric entry (for example "N/A" or a space). Open the Dataset tab, fix or clear the offending cell, or use <strong>Duplicate &amp; Convert Variable → Force to Numeric</strong>.</p>
+<p><strong>An analysis says "not enough complete cases".</strong>
+Listwise deletion removed too many rows. Check the <em>Missing Values</em> column of Variable Info, remove variables that are mostly empty, or use FIML in CFA/SEM.</p>
+<p><strong>CFA/SEM shows warnings about ordinal data.</strong>
+Likert items with five or fewer categories are ordinal. ML/MLR results are an approximation; see Chapter 18.4.</p>
+<p><strong>CFI / RMSEA are not shown.</strong>
+You chose FIML. Global fit indices are not available under FIML in this version; run listwise deletion to obtain them. They are also not reported for latent growth models.</p>
+<p><strong>The network plot is cut off or too small.</strong>
+Use the scroll wheel (Ctrl + wheel to zoom), the <strong>Fit</strong> button, or <strong>⤢ Open in Window</strong> for a larger view. Lower <strong>Node size</strong> for many variables.</p>
+<p><strong>EBICglasso says scikit-learn is required.</strong>
+Install it (<code>pip install scikit-learn</code>) when running from source. Packaged downloads include it.</p>
+<p><strong>Results differ slightly from SPSS / R / JASP.</strong>
+Small differences can arise from different defaults (for example Welch versus Student <em>t</em>, the correlation estimator, or rounding). Check the <em>Note</em> under each table for the exact method. If a difference is large, please report it (see below).</p>
+<p><strong>How do I report a problem?</strong>
+Open an issue at <a href="https://github.com/terysetn02-source/psystat/issues">https://github.com/terysetn02-source/psystat/issues</a> and include: your operating system and PsyStat version (Help → About), what you did, what you expected, what happened, and (if possible) a small example dataset with identifying information removed. Never post real participant data.</p>
+<p><strong>Is my data sent anywhere?</strong>
+No. PsyStat runs entirely on your computer and does not upload data or require an internet connection.</p>
+<hr />
+<h2 id="27-statistical-notes-limitations-and-references">27. Statistical notes, limitations and references</h2>
+<h3 id="271-principles">27.1 Principles</h3>
+<ul>
+<li><strong>Tables report what was computed.</strong> Each result states the method and, when relevant, how missing data were handled (listwise deletion, FIML), so the analysis can be reproduced.</li>
+<li><strong>p-values and effect sizes.</strong> Report effect sizes with confidence intervals alongside <em>p</em>-values. A significant <em>p</em> does not imply a large or important effect.</li>
+<li><strong>Multiple testing.</strong> When many tests are run, use the correction options (Correlation, ANOVA post-hoc, Network) or pre-register your analyses.</li>
+<li><strong>Assumptions.</strong> Check them (the tables and charts help) but remember that tests of assumptions are themselves sensitive to sample size.</li>
+</ul>
+<h3 id="272-known-limitations-of-this-version">27.2 Known limitations of this version</h3>
+<ul>
+<li>No multilevel or mixed-effects models, no multiple-group CFA/SEM, no imputation, and no ordinal/WLSMV estimators.</li>
+<li>Global fit indices are not available under FIML or for latent growth models.</li>
+<li>Forecasting uses Holt's linear exponential smoothing without a seasonal component.</li>
+<li>CATPCA is implemented with the <em>prince</em> library (MCA for categorical, FAMD for mixed and PCA for numeric variables) rather than with full optimal scaling.</li>
+<li>The network bootstrap for EBICglasso uses a restricted tuning-parameter window for speed.</li>
+<li>Results are validated by tests against reference implementations and simulations, but no software is bug-free; verify critical results independently.</li>
+</ul>
+<h3 id="273-references">27.3 References</h3>
+<p>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false discovery rate. <em>Journal of the Royal Statistical Society B, 57</em>, 289–300.</p>
+<p>Bentler, P. M. (1990). Comparative fit indexes in structural models. <em>Psychological Bulletin, 107</em>, 238–246.</p>
+<p>Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.</p>
+<p>Epskamp, S., Borsboom, D., &amp; Fried, E. I. (2018). Estimating psychological networks and their accuracy: A tutorial paper. <em>Behavior Research Methods, 50</em>, 195–212.</p>
+<p>Epskamp, S., &amp; Fried, E. I. (2018). A tutorial on regularized partial correlation networks. <em>Psychological Methods, 23</em>, 617–634.</p>
+<p>Field, A. (2013). <em>Discovering statistics using IBM SPSS Statistics</em> (4th ed.). Sage.</p>
+<p>Foygel, R., &amp; Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models. <em>Advances in Neural Information Processing Systems, 23</em>, 604–612.</p>
+<p>Fornell, C., &amp; Larcker, D. F. (1981). Evaluating structural equation models with unobservable variables and measurement error. <em>Journal of Marketing Research, 18</em>, 39–50.</p>
+<p>Friedman, J., Hastie, T., &amp; Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. <em>Biostatistics, 9</em>, 432–441.</p>
+<p>Hu, L., &amp; Bentler, P. M. (1999). Cutoff criteria for fit indexes in covariance structure analysis. <em>Structural Equation Modeling, 6</em>, 1–55.</p>
+<p>Jeffreys, H. (1961). <em>Theory of probability</em> (3rd ed.). Oxford University Press.</p>
+<p>Kass, R. E., &amp; Raftery, A. E. (1995). Bayes factors. <em>Journal of the American Statistical Association, 90</em>, 773–795.</p>
+<p>Kline, R. B. (2016). <em>Principles and practice of structural equation modeling</em> (4th ed.). Guilford Press.</p>
+<p>Ly, A., Verhagen, J., &amp; Wagenmakers, E.-J. (2016). Harold Jeffreys's default Bayes factor hypothesis tests. <em>Journal of Mathematical Psychology, 72</em>, 19–32.</p>
+<p>Lynn, M. R. (1986). Determination and quantification of content validity. <em>Nursing Research, 35</em>, 382–385.</p>
+<p>Polit, D. F., &amp; Beck, C. T. (2006). The content validity index: Are you sure you know what's being reported? <em>Research in Nursing &amp; Health, 29</em>, 489–497.</p>
+<p>Preacher, K. J., &amp; Hayes, A. F. (2008). Asymptotic and resampling strategies for assessing and comparing indirect effects in multiple mediator models. <em>Behavior Research Methods, 40</em>, 879–891.</p>
+<p>Raftery, A. E. (1995). Bayesian model selection in social research. <em>Sociological Methodology, 25</em>, 111–163.</p>
+<p>Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., &amp; Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. <em>Psychonomic Bulletin &amp; Review, 16</em>, 225–237.</p>
+<p>Rubin, D. B. (1981). The Bayesian bootstrap. <em>The Annals of Statistics, 9</em>, 130–134.</p>
+<p>Satorra, A., &amp; Bentler, P. M. (1994). Corrections to test statistics and standard errors in covariance structure analysis. In A. von Eye &amp; C. C. Clogg (Eds.), <em>Latent variables analysis</em> (pp. 399–419). Sage.</p>
+<p>van Doorn, J., van den Bergh, D., Böhm, U., et al. (2021). The JASP guidelines for conducting and reporting a Bayesian analysis. <em>Psychonomic Bulletin &amp; Review, 28</em>, 813–826.</p>
+<p>Wagenmakers, E.-J. (2007). A practical solution to the pervasive problems of <em>p</em> values. <em>Psychonomic Bulletin &amp; Review, 14</em>, 779–804.</p>
+<p>West, S. G., Finch, J. F., &amp; Curran, P. J. (1995). Structural equation models with nonnormal variables. In R. H. Hoyle (Ed.), <em>Structural equation modeling</em> (pp. 56–75). Sage.</p>
+<hr />
+<h2 id="28-how-to-cite-psystat">28. How to cite PsyStat</h2>
+<p>If you use PsyStat in published work, please cite it, and also cite the statistical methods you used.</p>
+<blockquote>
+<p>Setiawan, T. (2026). <em>PsyStat: A statistical analysis application for psychology and the social sciences</em> (Version 1.2.0) [Computer software]. https://github.com/terysetn02-source/psystat</p>
+</blockquote>
+<p>A machine-readable citation file (<code>CITATION.cff</code>) is included in the repository; GitHub shows a <strong>"Cite this repository"</strong> button from it.</p>
+<p>PsyStat is released under the <strong>MIT License</strong>. It builds on the open-source projects NumPy, pandas, SciPy, statsmodels, scikit-learn, matplotlib, pingouin, semopy, factor_analyzer, prince, networkx and Qt (PyQt6), each under its own licence.</p></body></html>

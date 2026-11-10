@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest an analysis, option or improvement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the research question or workflow that PsyStat does not support well today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like PsyStat to do?
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Papers, textbooks or software that describe the method (this helps ensure a correct implementation).
+  - type: dropdown
+    id: help
+    attributes:
+      label: Would you like to help?
+      options:
+        - I can test it
+        - I can contribute code
+        - I can contribute documentation
+        - I can only suggest it

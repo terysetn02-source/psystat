@@ -1,54 +1,45 @@
-; psystat_setup.iss
-; -----------------
-; Inno Setup 6 script for PsyStat Windows installer.
-;
-; Prerequisites:
-;   1. Run PyInstaller first:  pyinstaller psystat.spec
-;      This produces dist\PsyStat\ with PsyStat.exe and all bundled files.
-;   2. Install Inno Setup 6 (https://jrsoftware.org/isinfo.php)
-;   3. Open this file in the Inno Setup IDE and click Build → Compile,
-;      OR run from the command line:
-;        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" psystat_setup.iss
-;
-; Output: installer\Output\PsyStat-Setup-1.1.0.exe
+; Inno Setup script for the PsyStat Windows installer.
+; Build (after `pyinstaller --noconfirm psystat.spec` has created dist\PsyStat):
+;     "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=1.2.0 installer\psystat_setup.iss
+; Output: installer\Output\PsyStat-Setup-<version>.exe
 
-#define AppName      "PsyStat"
-#define AppVersion   "1.1.0"
-#define AppPublisher "Tery Setiawan"
-#define AppURL       "https://github.com/terysetn02-source/psystat"
-#define AppExeName   "PsyStat.exe"
-#define SourceDir    "..\dist\PsyStat"
+#ifndef MyAppVersion
+  #define MyAppVersion "1.2.0"
+#endif
+#define MyAppName "PsyStat"
+#define MyAppPublisher "Tery Setiawan"
+#define MyAppURL "https://github.com/terysetn02-source/psystat"
+#define MyAppExeName "PsyStat.exe"
 
 [Setup]
-; Basic metadata
-AppId={{A3F7C2D1-8B4E-4F9A-B5C6-1D2E3F4A5B6C}
-AppName={#AppName}
-AppVersion={#AppVersion}
-AppVerName={#AppName} {#AppVersion}
-AppPublisher={#AppPublisher}
-AppPublisherURL={#AppURL}
-AppSupportURL={#AppURL}/issues
-AppUpdatesURL={#AppURL}/releases
-
-; Installer behaviour
-DefaultDirName={autopf}\{#AppName}
-DefaultGroupName={#AppName}
+; IMPORTANT: AppId identifies this application for upgrades and uninstalling. NEVER change it between versions.
+; (If an earlier PsyStat installer used a different AppId, put that GUID here so that new versions upgrade in place.)
+AppId={{4CC540F4-59E8-4EE6-959D-1D18B51BCB88}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}/issues
+AppUpdatesURL={#MyAppURL}/releases
+DefaultDirName={autopf}\PsyStat
+DefaultGroupName=PsyStat
 DisableProgramGroupPage=yes
+LicenseFile=..\LICENSE
 OutputDir=Output
-OutputBaseFilename=PsyStat-Setup-{#AppVersion}
-Compression=lzma2/ultra64
+OutputBaseFilename=PsyStat-Setup-{#MyAppVersion}
+Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-
-; Security — allow non-admin install to AppLocalData if UAC fails
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+; Install for the current user without administrator rights unless the user chooses "for all users"
+PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-
-; Icons
+UninstallDisplayIcon={app}\{#MyAppExeName}
+#if FileExists("..\assets\icon.ico")
 SetupIconFile=..\assets\icon.ico
-UninstallDisplayIcon={app}\{#AppExeName}
-
-; Windows version requirement (Windows 10 and above)
-MinVersion=10.0
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -57,33 +48,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; Main application folder (all PyInstaller output)
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\PsyStat\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#AppName}";             Filename: "{app}\{#AppExeName}"
-Name: "{group}\Uninstall {#AppName}";   Filename: "{uninstallexe}"
-Name: "{commondesktop}\{#AppName}";     Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\PsyStat"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autodesktop}\PsyStat"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
-[UninstallDelete]
-Type: filesandordirs; Name: "{app}"
-
-[Code]
-// Show a SmartScreen bypass reminder after install on Windows 10/11
-procedure CurStepChanged(CurStep: TSetupStep);
-begin
-  if CurStep = ssPostInstall then
-  begin
-    MsgBox(
-      'PsyStat has been installed successfully.' + #13#10 + #13#10 +
-      'IMPORTANT — First Launch:' + #13#10 +
-      'Windows SmartScreen may block the app the first time you run it.' + #13#10 +
-      'If a blue warning screen appears, click "More info" then "Run anyway".' + #13#10 + #13#10 +
-      'This warning is normal for new software and does not indicate any risk.',
-      mbInformation, MB_OK
-    );
-  end;
-end;
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

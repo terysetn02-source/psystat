@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the user manual first
+    url: https://github.com/terysetn02-source/psystat/blob/main/docs/USER_MANUAL.md
+    about: Many questions are answered in the manual (see Chapter 26, Troubleshooting & FAQ).
+  - name: Report a security problem privately
+    url: https://github.com/terysetn02-source/psystat/security/advisories/new
+    about: Please do not open a public issue for security problems.

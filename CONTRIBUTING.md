@@ -1,77 +1,68 @@
 # Contributing to PsyStat
 
-Thank you for your interest in PsyStat. Contributions of all kinds are welcome —
-bug reports, feature suggestions, documentation improvements, and code contributions.
+Thank you for helping to improve PsyStat! Bug reports, corrections to statistical output, documentation fixes, new
+examples and code contributions are all welcome.
 
----
+## Ways to contribute
 
-## Reporting a Bug
+* **Report a bug** or a **result that disagrees with another program** (R, SPSS, JASP...): open an issue using the templates.
+  Statistical discrepancies are especially valuable; include the data (anonymised or simulated), the settings, PsyStat's
+  output and the reference output.
+* **Suggest a feature**, a method or a reference that should be added.
+* **Improve the documentation** (`docs/USER_MANUAL.md`, `examples/EXAMPLES_GUIDE.md`).
+* **Contribute code** through a pull request.
 
-Before opening an issue, please check the existing
-[Issues](../../issues) to see if the problem has already been reported.
+**Never post real participant data.** Use the simulated example datasets or fully anonymised data.
 
-When opening a new issue, include:
+## Development setup
 
-1. **PsyStat version** — visible in the app title bar or About dialog
-2. **Operating system** — Windows version or macOS version
-3. **What you did** — the steps you took before the error occurred
-4. **What you expected** — what you thought should happen
-5. **What actually happened** — the error message or incorrect output
-6. **Sample data** — if possible, a small anonymised CSV that reproduces
-   the problem (do not share real participant data)
+```bash
+git clone https://github.com/<your-username>/psystat.git
+cd psystat
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt
+python psystat.py                                       # run the app
+pytest                                                  # run the tests
+python psystat.py --selftest                            # verify that all libraries load
+```
 
-Use the **Bug Report** issue template when available.
+Python 3.11 or 3.12 is recommended. Tests run headless (`QT_QPA_PLATFORM=offscreen` is set automatically).
 
----
+## Project layout
 
-## Suggesting a Feature
+| Path | Contents |
+|---|---|
+| `psystat.py` | The application (GUI and analyses) |
+| `resources.py` | Locating bundled files; example data; opening documents (works in frozen builds) |
+| `docs/` | User manual (Markdown source, HTML and PDF built from it) |
+| `examples/` | Simulated example datasets and the guide |
+| `tools/` | `generate_examples.py`, `build_docs.py`, `make_icons.py` |
+| `tests/` | Automated tests |
+| `psystat.spec`, `installer/` | Packaging for Windows and macOS |
+| `.github/` | Issue templates and GitHub Actions workflows |
 
-Open an issue using the **Feature Request** template. Describe:
+## Pull requests
 
-- What you are trying to do statistically
-- Why the current functionality does not cover it
-- Which software (SPSS, R, Mplus, JASP, jamovi) covers it today, if any
-- Any references to the method you would like added
+1. Open an issue first for anything large, so we can agree on the approach.
+2. Create a branch from `main`; keep each pull request focused on one topic.
+3. **Statistical changes need a reference:** cite the method (paper or textbook) in the code comment and in the manual,
+   and add a test that compares the result with a known value or an independent implementation.
+4. Run `pytest` and `python psystat.py --selftest` before submitting.
+5. If you change something that users see, update `docs/USER_MANUAL.md` and `CHANGELOG.md`
+   (and rebuild the HTML/PDF with `python tools/build_docs.py`).
+6. Be careful with lazily imported libraries: every package the app imports on demand must be listed in `psystat.spec`
+   (`hiddenimports`) and in `requirements.txt`.
 
----
+## Style
 
-## Contributing Code
-
-1. **Fork** the repository and create a new branch from `main`:
-   ```
-   git checkout -b feature/your-feature-name
-   ```
-
-2. Make your changes in `psystat.py`. Please follow the existing code style:
-   - Functions are methods of the main `PsyStat` class
-   - UI init functions are named `init_<module>_tab()`
-   - Run functions are named `run_<module>()`
-   - HTML output uses the `get_apa_css()` stylesheet and `self.fmt()` for numbers
-
-3. Test your changes against both example datasets
-   (`examples/experiment_example.csv` and `examples/survey_example.csv`).
-
-4. If your change affects statistical output, document the method and any
-   known differences from SPSS in a comment block above the function.
-
-5. Open a **Pull Request** against `main` with a clear description of what
-   changed and why.
-
----
-
-## Statistical Accuracy
-
-PsyStat aims for high parity with SPSS output. If you are implementing or
-modifying a statistical procedure, please:
-
-- Cite the primary reference for the algorithm
-- Note which SPSS procedure the output is intended to match
-- Document any expected numerical differences (e.g., optimiser tolerance
-  differences in EFA) in the output itself and in the User Manual
-
----
+* Follow the existing structure and naming; prefer clear code to clever code.
+* Output text should follow APA 7 conventions (italic statistical symbols, no leading zero for *p*, explicit notes).
+* Never swallow an error silently in an analysis: either handle it with a clear message to the user or let it surface.
 
 ## Code of Conduct
 
-Be respectful, constructive, and collegial. This project is maintained by
-an academic researcher; please be patient with response times.
+By participating you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Licence
+
+By contributing you agree that your contributions are licensed under the project's [MIT License](LICENSE).

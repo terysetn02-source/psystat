@@ -1,62 +1,63 @@
 # Changelog
 
-All notable changes to PsyStat are documented here.  
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+All notable changes to PsyStat are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
----
+## [1.2.0] - 2026-11-01
 
-## [1.1.0] — 2025-07-30
+### Added
+- **Network analysis:** EBICglasso (graphical lasso with extended-BIC selection), significance-tested partial correlations
+  (Bonferroni, Holm, Benjamini-Hochberg), unregularised partial correlations and zero-order correlation networks;
+  Pearson, Spearman and nonparanormal input; expected influence; bootstrap edge-weight accuracy and case-dropping
+  stability (CS-coefficient); custom node colours for user-defined subscales; adjustable edge colours, label font and
+  node size; scrollable plot (mouse wheel, Ctrl+wheel zoom), *Open in Window* and *Save 300 DPI*.
+- **CFA:** robust **MLR** estimator (Huber-White sandwich standard errors, Satorra-Bentler scaled chi-square, scaled
+  CFI/TLI/NFI/RMSEA); **raw-data metric** (unstandardised estimates in the instrument's own scale); model-implied
+  Std.lv and Std.all for all models.
+- **Mediation:** R-squared, adjusted R-squared, F and delta-R-squared for each regression equation.
+- **Bayesian analysis:** 95% credible intervals (CrI), BF01 next to BF10, prior specification in every table, posterior
+  median and mean (exact posteriors for the t-tests and the correlation), frequentist statistics in a separate
+  reference table, stretched-beta prior width setting for correlations, Bayesian bootstrap for mediation.
+- **Documentation:** full user manual (Markdown, HTML, PDF), four simulated example datasets with an examples guide,
+  README, contribution and security policies, citation file.
+- **Packaging:** PyInstaller specification for PyQt6, Windows installer script, macOS disk-image script, GitHub Actions
+  workflows (CI and release builds for Windows, macOS Apple Silicon and macOS Intel), and a `--selftest` command
+  that verifies a built application.
+- Autosave failures now show a warning dialog (once per failure episode).
 
-### Fixed — Statistical Corrections
+### Changed
+- CFA and SEM: **listwise deletion is now the default** missing-data method; FIML uses all rows but does not provide
+  global fit indices (see Fixed).
+- The network plot layout is defined in inches, so the title, plot and legend keep proportional margins at any size.
+- Network centralities (closeness, betweenness) use weighted path lengths (1/|weight|), as in qgraph.
+- *p*-values are shown without a leading zero (APA 7), e.g. *p* = .032.
+- CVI input label clarified (use 2.5 for a 4-point scale).
 
-- **Factorial ANOVA:** Switched from Type II to Type III Sums of Squares when
-  interaction terms are included. Sum (effects) coding is now applied
-  automatically to all categorical predictors in interaction models, matching
-  SPSS GLM and R `car::Anova(type=3)` behaviour. Type II is still used for
-  main-effects-only models.
+### Fixed
+- Kamada-Kawai layout crashed with negative edge weights; layouts now use positive strengths.
+- Partial-correlation networks with a total score and its items returned arbitrary (sign-flipping) values; the singular
+  case is now detected and explained.
+- Bridge analysis used signed weights for community detection and betweenness; it now uses absolute weights and the same
+  grouping as the plot.
+- CFA/SEM reported "FIML" while silently dropping incomplete rows; FIML now really uses incomplete rows, and the invalid
+  fit indices that follow a FIML fit are no longer shown.
+- Factor loadings appeared under "Regressions" instead of "Latent Variables"; CFI could exceed 1; the baseline chi-square
+  *p*-value silently failed.
+- Optimizer stopped early on raw-scale data (inflated chi-square); a tighter tolerance is now used.
+- Mediation crashed if it was the first analysis run in a session; its APA write-up always said "significantly predicted".
+- Bayesian: the Cauchy prior scale *r* was ignored, the Welch *t* was used for the Bayes factor, and the correlation note
+  named the wrong prior.
+- Repeated-measures ANOVA silently skipped Mauchly's test unless pingouin had already been loaded, and read column names
+  that newer pingouin versions renamed.
+- Categorical PCA failed for all-numeric selections and for text columns under pandas 3; text-column detection no longer
+  depends on the `object` dtype.
+- Typing text into a numeric spreadsheet cell no longer corrupts the column; invalid entries are rejected with a message.
+- Autosave folder could be unusable for a second user on shared Linux/macOS computers.
+- Latent growth models no longer print misleading global fit indices.
+- Menu labels in the Network module were clipped in narrow side panels.
+- README/Guide menu entries opened bare Markdown files; they are now rendered to HTML. Previous build specification
+  referenced PyQt5 although the application uses PyQt6.
 
-- **Repeated-Measures ANOVA:** Replaced `statsmodels.stats.anova.AnovaRM`
-  with `pingouin.rm_anova`. The output now includes Mauchly's test of
-  sphericity (W and p), Greenhouse-Geisser ε and corrected p-value, and
-  Huynh-Feldt ε and corrected p-value — matching SPSS GLM Repeated Measures
-  output. A colour-coded banner (green ✔ / red ⚠) guides users on which
-  p-value to report.
+## [1.1.0]
 
-- **Logistic & Multinomial Regression:** Added Cox & Snell R² and Nagelkerke
-  R² to the Model Fit table. These are the two metrics SPSS reports by
-  default. McFadden's R² is retained but now explicitly labelled. Log-
-  likelihoods for null and fitted models are shown for manual verification.
-
-- **CATPCA:** Replaced `OrdinalEncoder + StandardScaler + PCA` pipeline with
-  `prince.MCA` (for purely categorical data) and `prince.FAMD` (for mixed
-  data). This implements optimal scaling equivalent to SPSS's Alternating
-  Least Squares algorithm. Added per-variable scaling level detection
-  (Nominal / Ordinal / Numeric) with auto-detection from column dtype. Added
-  Cronbach's Alpha per dimension to the Model Summary table, matching SPSS
-  CATPCA output.
-
-- **CFA:** Fixed `Std.lv` and `Std.all` columns showing identical values.
-  Both are now computed correctly via `model.inspect(std_est=...)` with a
-  manual matrix-algebra fallback. Fixed Cronbach's α, McDonald's ω (CR), and
-  AVE disappearing after the standardization fix by giving the reliability
-  block its own independent standardized loading lookup.
-
-- **EFA:** Added SPSS comparison disclaimer to every output explaining that
-  minor differences from SPSS PAF at the 4th decimal place are expected and
-  not errors.
-
----
-
-## [1.0.0] — 2025-07-01
-
-### Initial Release
-
-- 17 analysis modules: Data Management, Data Visualization, Descriptives &
-  Crosstabs, Item Analysis & CVI, Correlation, Compare Means, Analysis of
-  Variance, Regression, Mediation Analysis, Categorical PCA, Cluster &
-  Profile Analysis, Forecasting, Exploratory Factor Analysis, Confirmatory
-  Factor Analysis, SEM, Network Analysis, Power Analysis.
-- APA-formatted HTML output for every module.
-- Export to HTML and Word.
-- Built-in example datasets (`experiment_example.csv`, `survey_example.csv`).
-- Self-contained installers for Windows (.exe) and macOS (.dmg).
+Earlier releases: see the [GitHub releases page](https://github.com/terysetn02-source/psystat/releases).
