@@ -119,7 +119,7 @@ jobs:
           exit ${STATUS:-0}
 
       - name: Create disk image
-        run: ./installer/build_macos_dmg.sh "$VERSION" "${{ matrix.label }}"
+        run: bash installer/build_macos_dmg.sh "$VERSION" "${{ matrix.label }}"
 
       - uses: actions/upload-artifact@v4
         with:
