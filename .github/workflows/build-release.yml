@@ -75,7 +75,7 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path "dist\PsyStat\*" -DestinationPath "dist\PsyStat-Windows-$env:VERSION.zip"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: |
@@ -121,7 +121,7 @@ jobs:
       - name: Create disk image
         run: bash installer/build_macos_dmg.sh "$VERSION" "${{ matrix.label }}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: macos-${{ matrix.label }}
           path: dist/PsyStat-*-macOS-*.dmg
